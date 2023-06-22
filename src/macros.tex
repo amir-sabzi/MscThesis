@@ -1,21 +1,73 @@
-% This file provides examples of some useful macros for typesetting
-% dissertations.  None of the macros defined here are necessary beyond
-% for the template documentation, so feel free to change, remove, and add
-% your own definitions.
-%
-% We recommend that you define macros to separate the semantics
-% of the things you write from how they are presented.  For example,
-% you'll see definitions below for a macro \file{}: by using
-% \file{} consistently in the text, we can change how filenames
-% are typeset simply by changing the definition of \file{} in
-% this file.
-% 
-%% The following is a directive for TeXShop to indicate the main file
-%%!TEX root = diss.tex
+\newcommand{\sys}{{NetShaper}}
+\newcommand{\nsc}{network side channel}
+\newcommand{\nsca}{network side-channel}
+\newcommand{\eg}{e.g.,~}
+\newcommand{\ie}{i.e.,~}
+\newcommand{\medvid}{MedFlix}
+\newcommand{\unshapedQ}{Q}
+\newcommand{\flowmap}{\texttt{FlowMap}}
+\newcommand{\prepare}{\texttt{Prepare}}
+\newcommand{\ushaper}{\texttt{UShaper}}
+\newcommand{\dshaper}{\texttt{DShaper}}
+
+\newcommand{\istream}{S}
+%\newcommand{\ostream}{S^{\epsilon,\delta}}
+\newcommand{\ostream}{O}
+\newcommand{\istreamw}{S_w}
+\newcommand{\ostreamw}{O_w}
+\newcommand\norm[1]{\|#1\|}
+\newcommand{\ssens}{\Delta_{\winlen}}
+\newcommand{\qsens}{\Delta_\dpintvl}
+\newcommand{\winlen}{W}
+\newcommand{\window}{w}
+\newcommand{\stream}{S}
+\newcommand{\streamw}[1]{S_{#1}}
+\newcommand{\qlen}{L}
+\newcommand{\dpintvl}{T}
+\newcommand{\qlent}[1]{L_{#1}}
+\newcommand{\qlendp}{\tilde{L}}
+\newcommand{\qlendpt}[1]{\tilde{L}_{#1}}
+%\newcommand{\qlendp}{L^{\epsilon_\dpintvl, \delta_\dpintvl}}
+%\newcommand{\qlendpt}[1]{L_{#1}^{\epsilon_\dpintvl, \delta_\dpintvl}}
+\newcommand{\payload}{R}
+\newcommand{\dummy}{D}
+\newcommand{\numupdates}{\lceil \frac{\winlen}{\dpintvl} \rceil}
+\newcommand{\varnumupdates}{N}
+
+\newcommand{\base}{{\bf Base}}
+\newcommand{\nsnoshape}{{\bf NS\textsubscript{M}}}
+\newcommand{\ns}{{\bf NS}}
+\newcommand{\nssim}{{\bf NS\textsubscript{S}}}
+\newcommand{\constshape}{{\bf CR}}
+\newcommand{\pacer}{{\bf Pacer}}
+
+\newcommand{\parasum}[1]{\smallskip\noindent\hl{#1}}
+
+\newcommand{\todo}[1]{\textcolor{red} {#1}}
+\newcommand{\update}[1]{\textcolor{blue} {#1}}
+\newcommand{\final}[1]{\textcolor{blue} {#1}}
+\newcommand{\citeme}[1]{\textcolor{red} {[{\bf #1}]}}
+\newcommand{\am}[1]{\textcolor{cyan}{\bf AM: #1}}
+\newcommand{\mis}[1]{\textcolor{purple}{\bf MIS: #1}}
+\newcommand{\ml}[1]{\textcolor{orange}{\bf ML: #1}}
+\newcommand{\as}[1]{\textcolor{forestgreen}{\bf AS: #1}}
+\newcommand{\strike}[1]{\sout{#1}}
+\newcommand{\addref}{\textcolor{orange}{\textbf{ADD REF}}}
+
+% \newcommand{\todo}[1]{{#1}}
+% \newcommand{\update}[1]{{#1}}
+% \newcommand{\final}[1]{{#1}}
+% \newcommand{\citeme}[1]{\cite{#1}}
+% \newcommand{\am}[1]{#1}
+% \newcommand{\mis}[1]{{#1}}
+% \newcommand{\ml}[1]{{#1}}
+% \newcommand{\as}[1]{{#1}}
+% %\newcommand{\strike}[1]{}
+
+
+
 
 \newcommand{\NA}{\textsc{n/a}}	% for "not applicable"
-\newcommand{\eg}{e.g.,\ }	% proper form of examples (\eg a, b, c)
-\newcommand{\ie}{i.e.,\ }	% proper form for that is (\ie a, b, c)
 \newcommand{\etal}{\emph{et al}}
 
 % Some useful macros for typesetting terms.

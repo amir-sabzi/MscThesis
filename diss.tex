@@ -1,76 +1,13 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Template for a UBC-compliant dissertation
-% At the minimum, you will need to change the information found
-% after the "Document meta-data"
-%
-%!TEX TS-program = pdflatex
-%!TEX encoding = UTF-8 Unicode
-
-%% The ubcdiss class provides several options:
-%%   gpscopy (aka fogscopy)
-%%       set parameters to exactly how GPS specifies
-%%         * single-sided
-%%         * page-numbering starts from title page
-%%         * the lists of figures and tables have each entry prefixed
-%%           with 'Figure' or 'Table'
-%%       This can be tested by `\ifgpscopy ... \else ... \fi'
-%%   10pt, 11pt, 12pt
-%%       set default font size
-%%   oneside, twoside
-%%       whether to format for single-sided or double-sided printing
-%%   balanced
-%%       when double-sided, ensure page content is centred
-%%       rather than slightly offset (the default)
-%%   singlespacing, onehalfspacing, doublespacing
-%%       set default inter-line text spacing; the ubcdiss class
-%%       provides \textspacing to revert to this configured spacing
-%%   draft
-%%       disable more intensive processing, such as including
-%%       graphics, etc.
-%%
-
 % For submission to GPS
 \documentclass[gpscopy,onehalfspacing,11pt]{ubcdiss}
 
-% For your own copies (looks nicer)
-% \documentclass[balanced,twoside,11pt]{ubcdiss}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%% FONTS:
-%% 
-%% The defaults below configures Times Roman for the serif font,
-%% Helvetica for the sans serif font, and Courier for the
-%% typewriter-style font.  Configuring fonts can be time
-%% consuming; we recommend skipping to END FONTS!
-%% 
-%% If you're feeling brave, have lots of time, and wish to use one
-%% your platform's native fonts, see the commented out bits below for
-%% XeTeX/XeLaTeX.  This is not for the faint at heart. 
-%% (And shouldn't you be writing? :-)
-%%
 
 %% NFSS font specification (New Font Selection Scheme)
 \usepackage{times,mathptmx,courier}
 \usepackage[scaled=.92]{helvet}
-
-%% Math or theory people may want to include the handy AMS macros
-%\usepackage{amssymb}
-%\usepackage{amsmath}
-%\usepackage{amsfonts}
-
-%% The pifont package provides access to the elements in the dingbat font.   
-%% Use \ding{##} for a particular dingbat (see p7 of psnfss2e.pdf)
-%%   Useful:
-%%     51,52 different forms of a checkmark
-%%     54,55,56 different forms of a cross (saltyre)
-%%     172-181 are 1-10 in open circle (serif)
-%%     182-191 are 1-10 black circle (serif)
-%%     192-201 are 1-10 in open circle (sans serif)
-%%     202-211 are 1-10 in black circle (sans serif)
-%% \begin{dinglist}{##}\item... or dingautolist (which auto-increments)
-%% to create a bullet list with the provided character.
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
 \usepackage{pifont}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -97,34 +34,20 @@
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
+
 %% Recommended packages
-%%
 \usepackage{checkend}	% better error messages on left-open environments
 \usepackage{graphicx}	% for incorporating external images
-
-%% booktabs: provides some special commands for typesetting tables as used
-%% in excellent journals.  Ignore the examples in the Lamport book!
 \usepackage{booktabs}
-
-%% listings: useful support for including source code listings, with
-%% optional special keyword formatting.  The \lstset{} causes
-%% the text to be typeset in a smaller sans serif font, with
-%% proportional spacing.
 \usepackage{listings}
 \lstset{basicstyle=\sffamily\scriptsize,showstringspaces=false,fontadjust}
-
-%% The acronym package provides support for defining acronyms, providing
-%% their expansion when first used, and building glossaries.  See the
-%% example in glossary.tex and the example usage throughout the example
-%% document.
-%% NOTE: to use \MakeTextLowercase in the \acsfont command below,
-%%   we *must* use the `nohyperlinks' option -- it causes errors with
-%%   hyperref otherwise.  See Section 5.2 in the ``LaTeX 2e for Class
-%%   and Package Writers Guide'' (clsguide.pdf) for details.
 \usepackage[printonlyused,nohyperlinks]{acronym}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% NEW COMMANDS
+
 %% The ubcdiss.cls loads the `textcase' package which provides commands
 %% for upper-casing and lower-casing text.  The following causes
 %% the acronym package to typeset acronyms in small-caps
@@ -135,13 +58,15 @@
 %% to great effect to emphasize other parts of a graphic or text.
 %% For an excellent set of examples, see Tufte's "Visual Display of
 %% Quantitative Information" or "Envisioning Information".
-\usepackage{color}
-\definecolor{greytext}{gray}{0.5}
 
+\usepackage{xcolor}
+\definecolor{forestgreen}{RGB}{34, 139, 34}
+\definecolor{greytext}{gray}{0.5}
 %% comment: provides a new {comment} environment: all text inside the
 %% environment is ignored.
 %%   \begin{comment} ignored text ... \end{comment}
 \usepackage{comment}
+
 
 %% The natbib package provides more sophisticated citing commands
 %% such as \citeauthor{} to provide the author names of a work,
@@ -254,6 +179,8 @@
 %%\newcommand{\nocitations}{No citations}
 %%
 %\renewcommand*{\backref}[1]{}% necessary for backref < 1.33
+
+
 \renewcommand*{\backrefsep}{,~}%
 \renewcommand*{\backreftwosep}{,~}% ', and~'
 \renewcommand*{\backreflastsep}{,~}% ' and~'
@@ -315,36 +242,29 @@
 %% Document meta-data: be sure to also change the \hypersetup information
 %%
 
-\title{On the Use of the \texttt{ubcdiss} Template}
+\title{A differentially private network traffic shaping framework}
 %\subtitle{If you want a subtitle}
 
-\author{Johnny Canuck}
-\previousdegree{B. Basket Weaving, University of Illustrious Arts, 1991}
-\previousdegree{M. Silly Walks, Another University, 1994}
+\author{Amir Sabzi}
+\previousdegree{B. Engineering, Sharif University of Technology, Department of Electrical Engineering, 2021}
+\previousdegree{B. Science, Sharif University of Technology, Department of Computer Science, 2021}
 
 % What is this dissertation for?
-\degreetitle{Doctor of Philosophy}
+\degreetitle{Master of Science}
 
 \institution{The University of British Columbia}
 \campus{Vancouver}
 
 \faculty{The Faculty of Graduate and Postdoctoral Studies}
-\department{Basket Weaving}
-\submissionmonth{April}
-\submissionyear{2192}
+\department{Computer Science}
+\submissionmonth{August}
+\submissionyear{2023}
 
 % details of your examining committee
-\examiningcommittee{John Smith, Professor, Materials Engineering, \textsc{UBC}}{Supervisor}
-\examiningcommittee{Mary Maker, Professor, Materials Engineering, \textsc{UBC}}%
-    {Supervisory Committee Member}
-\examiningcommittee{Nebulous Name, Position, Department, Institution}{Supervisory Committee Member}
-\examiningcommittee{Magnus Monolith, Position, Other Department, Institution}{Additional Examiner}
+\examiningcommittee{Aastha Mehta, Assistant Professor, Computer Science, \textsc{UBC}}{Co-Supervisor}
+\examiningcommittee{Mathias L\'{e}cuyer, Assistant Professor, Computer Science, \textsc{UBC}}%
+    {Co-Supervisor}
 
-% details of your supervisory committee
-\supervisorycommittee{Ira Crater, Professor, Materials Engineering, \textsc{UBC}}%
-    {Supervisory Committee Member}
-\supervisorycommittee{Adeline Long, \textsc{CEO} of Aerial Machine
-    Transportation, Inc.}{Supervisory Committee Member}
 
 %% hyperref package provides support for embedding meta-data in .PDF
 %% files
@@ -383,15 +303,15 @@
 \makecommitteepage
 
 %    3. Abstract (mandatory - maximum 350 words)
-\include{abstract}
+\include{src/abstract}
 \cleardoublepage
 
 %    4. Lay Summary (Effective May 2017, mandatory - maximum 150 words)
-\include{laysummary}
+\include{src/laysummary}
 \cleardoublepage
 
 %    5. Preface
-\include{preface}
+\include{src/preface}
 \cleardoublepage
 
 %    6. Table of contents (mandatory - list all items in the preliminary pages
