@@ -32,24 +32,40 @@ Variable-rate shaping strategies aim to decrease bandwidth overheads at the expe
 Balancing the trade-offs between privacy and overheads can be challenging without a proper method to quantitatively measure and evaluate privacy guarantees. 
 Consequently, in the absence of a standardized notation for privacy, relying on ad-hoc heuristics for variable-rate traffic shaping may potentially result in uncontrolled privacy leaks~\cite{gong2020zero, cai2014csbuflo, lu2018dynaflow, juarez2016wtfpad, cai2014tamaraw}.
 Recent advances in machine learning (ML) have significantly empowered network side-channel attacks, as they have enhanced attackers' ability to accurately map the noisy traffic pattern to its corresponding content~\cite{schuster2017beautyburst, bhat2019varcnn, hayes2016kfp, sirinam2018df}.
-To particularly address ML-based attacks, one approach is to introduce ad-hoc~\cite{luo2011httpos} or adversarial noise~\cite{shan2021dolos, nasr2021blind, rahman2020mockingbird} into the traffic traces, aiming to obfuscate them and make it more challenging to infer the content of the traffic by observing its pattern. 
+To particularly address ML-based attacks, one approach is to introduce ad-hoc~\cite{luo2011httpos} or adversarial noise~\cite{shan2021dolos, nasr2021blind, rahman2020mockingbird} into the traffic traces, aiming to obfuscate them and make it more challenging for ML model to infer the content of the traffic by observing its pattern. 
 However, these methods also lack formal privacy guarantees and rely on the assessment of privacy through existing network side-channel attacks.
-As attacks continue to evolve and become more sophisticated, certain older defense mechanisms fail to be effective against newer ML-based attacks~\cite{sirinam2018df}, leading to an ongoing arms race between attackers and defense mechanisms.
+As attacks continue to evolve and become more sophisticated, certain older defense mechanisms fail to be effective against newer ML-based attacks~\cite{sirinam2018df}, leading to an ongoing arms race between attackers and defense mechanisms. 
+On the other hand, an efficient defense mechanism, designed based on a standardized notion of privacy, offers two significant advantages: Firstly, it brings an end to the cat-and-mouse game between attackers and defense mechanisms. Secondly, it enables users to effectively balance the trade-offs between overheads and privacy according to their specific requirements.  
 
-An efficient defense mechanism, designed based on a standardized notion of privacy, offers two significant advantages. Firstly, it brings an end to the cat-and-mouse game between attackers and defense mechanisms. Secondly, it enables users to effectively balance the trade-offs between overheads and privacy according to their specific requirements.  
+
 % Section 3: Contribution
 % what are the main contributions of your paper given the context you have established in paragraphs 1 and 2.
 % What is the general approach taken?
 % Why are the specific results significant?
+%% Thinks I want to highlight in this paragraph:
+%%% - our framework uses DP for: 1- quantitative privacy guarantee, 2- future-proof guarantees
+%%% - it is dynamic, and therefore, it does not need traffic monitoring 
+%%% - we design it to be an independent (module?) that can be deployed anywhere along the path of traffic, we decided to implement in a middebox 
+In this work, we introduce a novel framework called {\sys} for network traffic shaping.
+Our framework leverages the concept of differential privacy (DP) to provide measurable privacy guarantees.
+{\sys} partitions traffic traces into windows of transmission and reshapes each window dynamically to achieve per-window DP guarantees.
+These per-window DP guarantees can be composed together to quantify the overall privacy of a traffic trace, regardless of its length.
+{\sys} offers extensive configurability, enabling applications to effectively manage the trade-offs between privacy, bandwidth overhead, and latency of communication without profiling applications' traffic.
+Furthermore, in a bidirectional communication, applications can configure privacy/overhead parameters of each direction independently.
+{\sys} defeats the state-of-the-art traffic analysis attacks.
+Additionally, it provides robust theoretical privacy guarantees for traffic shaping, ensuring that the privacy of users remains intact even in the face of future attacks.
+We design {\sys} as a modular traffic shaping tunnel endpoint that can be seamlessly integrated with any network stack along the path of traffic, providing flexibility and adaptability.
+To enhance the scalability of {\sys}, we position it within a middlebox, enabling it to deliver privacy guarantees for multiple applications with low overheads. 
+This design further enhances the application-agnostic nature of {\sys}, as it eliminates the need for modifications on the end-hosts. 
 
-
-
-
+\todo{ADD: introduction conclusion paragraph}
 % Section 4: Distinctions
 % At a high level what are the differences in what you are doing, and what others have done?
 % Keep this at a high level, you can refer to a future section where specific details and differences will be given. But it is important for the reader to know at a high level, what is new about this work compared to other work in the area.
 
 
 
-% Section 5: Structure
-% Tell the reader what they should expect to read in coming parts of the thesis.
+% % Section 5: Structure
+% % Tell the reader what they should expect to read in coming parts of the thesis.
+% The rest of the thesis is organized as follows:
+% \todo{ADD: contributions}

@@ -1,0 +1,57 @@
+
+\chapter{Differentially Private Traffic Shaping}
+\label{ch:dp-shaping}
+% Chapter Introduction
+Traffic shaping can be implemented at different layers within the network stack of an application.
+At the transport layer, shaping involves dynamically adjusting the data transmission rate, specifically the size of data transmitted within a given time window, to ensure that the size and timing of data transmission do not disclose sensitive information of the applications.
+At the network layer, traffic shaping is about transmitting packets in a manner that does not reveal users' private information through the timing and sizing of the packets. 
+The selection of either approach has profound implications for both the design of shaping algorithm and the traffic shaping system itself.
+Designing traffic shaping mechanism at network layer requires determining the size and transmission of every individual packets. 
+Networking hardware capabilities, such as popular NICs, and network protocol specifications significantly constrain the design space in this context~\cite{mehta2022pacer}.  
+On the other hand, to design a traffic shaping mechanism that operates on the top of transport layer, it is crucial to assume that \textit{after traffic shaping, the shaped traffic remains unaffected by the content or pattern of the unshaped traffic, during all subsequent processes such as encryption, packetization, and packet transmission scheduling}.
+This assumption guarantees that the shaping mechanism maintains its integrity and effectively separates the sensitive information from the traffic pattern regardless the way network stack transmits the shaped traffic.
+{\sys} performs differentially private traffic shaping on the top of transport layer, and in section {\addref} we elaborate on how our system satisfies this assumption.
+ 
+The objective of our DP traffic shaping is to dynamically adapt the data transmission rate based on the available data stream, while simultaneously ensuring that the DP guarantees remain intact for any information that an attacker can observe, as specified in our threat model {\addref}.
+We further extend 
+The design of our traffic shaping algorithm relies on three key steps.
+%
+First, we formalize the information available to an attacker observing an application stream, which is all information such as packet sizes or timing at the finest granularity of observation.
+We propose to use a buffering queue to collapse all this information into a sufficient statistic to adapt {\sys}'s transmission rate: the size of data in the queue waiting to be transmitted through our shaping mechanism.
+%
+Second, we show how to perform {\em DP measurements} of our buffering queue, in order to adapt \sys's transmission rate with DP guarantees.
+We show that during data transmission with {\sys} shaping mechanism, the change of queue size is bounded, allowing us to perform DP measurements.
+%
+Third, we describe our decision mechanism for sending data based on DP decisions, which completes our DP shaping mechanism.
+Intuitively, we can use DP queue measurements and public information such as network conditions to decide the amount of data to transmit.
+Transmissions contain applications' queued data when some is available, and dummy data otherwise.
+The traffic pattern observed by the attacker is a post-processing of the DP queries issued on the queue (depends on the private data only through the DP measurements), and is differentially private.
+
+
+\section{Definitions and Assumptions}
+\label{sec:defs}
+An application's stream can be represented as a sequence of packets:
+\begin{equation}
+    \istream = \{{P^S_1}, {P^S_2}, {P^S_3}, \dots \}
+\end{equation}
+where ${P_i}^S = (l^S_i, t^S_i)$ indicates that the $i$\textsuperscript{th} input packet in $S$ has length $l_i$ bytes and is transmitted at timestamp $t_i$.
+Without shaping, an adversary can precisely observe $\istream$ and infer
+the content, which is correlated with the~stream~\cite{schuster2017beautyburst}.
+
+Our DP shaping relies on two key ideas.
+First,~it models the DP guarantees for the (potentially long) traffic streams in
+windows of fixed length $\winlen$, denoted by \mbox{($\varepsilon_{\winlen},
+\delta_{\winlen}$)-DP}.
+An input sequence over window $j$ is a finite~sub\-sequence $S_{j} \subset S$,
+such that
+$S_{j} = \{ P^S_i~|~P^S_i \in S~and~t_i \in j \}$.
+{\sys}'s DP guarantees cover all (overlapping) windows up to size
+$\winlen$.
+A key assumption for {\sys}'s DP guarantees to hold over $\winlen$-sized windows
+is that the tunnel can always transmit all incoming data from
+application streams within any $\winlen$-sized time window.
+In other words, we assume:
+\begin{assumption}\label{assumption:window}
+  All bytes enqueued prior to or at time $t$ are transmitted by time
+  $t+W$.
+\end{assumption}
