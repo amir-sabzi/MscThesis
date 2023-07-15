@@ -6,10 +6,11 @@
 \usepackage{times,mathptmx,courier}
 \usepackage[scaled=.92]{helvet}
 \usepackage{amssymb}
+\usepackage{amsthm}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{pifont}
-
+\usepackage{tikz}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Configure fonts for XeTeX / XeLaTeX using the fontspec package.
 %% Be sure to check out the fontspec documentation.
@@ -170,6 +171,7 @@
     allbordercolors={0.8 0.8 0.8},%
     ]{hyperref}
 \fi
+\usepackage{cleveref}
 %% The following change how the the back-references text is typeset in a
 %% bibliography when `backref' or `pagebackref' are used
 %%
@@ -351,6 +353,7 @@
 
 %    2. Main body
 % Generally recommended to put each chapter into a separate file
+\include{src/background}
 \include{src/dp_shaping}
 %\include{relatedwork}
 %\include{model}

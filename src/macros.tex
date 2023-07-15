@@ -1,12 +1,15 @@
 \newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
 \newtheorem{proposition}{Proposition}
 \newtheorem{lemma-numbered}{Lemma}
 \newtheorem{assumption}{Assumption}
 \newenvironment{proofsketch}{%
-    \renewcommand{\proofname}{Proof sketch}\proof}{\endproof}
+  \renewcommand{\proofname}{Proof sketch}\proof}{\endproof}
 
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+  \node[shape=circle,draw,inner sep=1pt] (char) {#1};}}
 
-
+\newcommand{\dbSpace}{\mathbb{N}^\mathcal{X}}
 
 \newcommand{\sys}{\textit{NetShaper}}
 \newcommand{\nsc}{network side channel}
@@ -76,10 +79,14 @@
 
 
 
+\DeclareMathOperator*{\argmax}{argmax}
+
+
+
 
 \newcommand{\NA}{\textsc{n/a}}	% for "not applicable"
-\newcommand{\etal}{\emph{et al}}
-
+\newcommand{\etal}{\emph{et al.~}}
+\newcommand{\etalc}[1]{~\empth{et al.~\cite{#1}}}
 % Some useful macros for typesetting terms.
 \newcommand{\file}[1]{\texttt{#1}}
 \newcommand{\class}[1]{\texttt{#1}}
