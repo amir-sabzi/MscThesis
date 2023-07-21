@@ -2,6 +2,9 @@
 In this section, we explore previous mitigation approaches proposed to address network side-channel attacks. 
 We categorize these approaches into 4 general categories: 1- Static shaping methods, 2- Dynamic shaping methods, 3- Hybrid traffic shaping methods, 4- Adversarial traffic patterns. 
 
+
+
+
 \subsection{Static Traffic Shaping}\label{subsec:static-traffic-shaping}
 Static traffic shaping methods typically consist of two distinct phases: the profiling phase and the shaping phase.
 During the profiling phase, the shaping mechanism collects user-specific information from the user's traffic traces.
@@ -27,9 +30,45 @@ If $l' > l$, TM pads the outgoing packet with dummy data to match the size $l'$.
 On the other hand, if $l' < l$, TM sends $l'$ bytes and continues sampling from the distribution of $W'$ until all bytes of the original packet have been transmitted.
 It is important to emphasize that the traffic morphing method does not hide the timing or duration of bursts of traffic.
 Therefore, an adversary can still exploit these features of traffic traces to potentially reveal users' information based on their traffic patterns, even when traffic morphing is deployed~\cite{dyer2012peek}.
-%% Pacer
 
 
+\subsubsection{Walkie-Talkie}\label{subsubsec:walkie-talkie}
+Wang\etalc{wang2017walkie} propose \textit{Walkie-Talkie} as a new defense mechanism implemented in browsers to hide traffic shape of sensitive websites.
+\textit{Walkie-Talkie} requires browsers modification to change the default full-duplex communication to half-duplex mode.
+In full-duplex communication, multiple servers are actively transmitting web page data to the client, while the client concurrently submits additional resource requests, potentially to different servers.
+In half duplex mode, on the other hand, the client only sends requests after the web servers have satisfied all previous requests.
+Using half-duplex mode enables \textit{Walkie-Talkie} to change communication to a sequence of bursts of data between one client and one server at a time. 
+\textit{Walkie-Talkie} represents each burst sequence $s$ as follows:
+\begin{equation*}
+  s = \{(b_{1+}, b_{1-}), (b_{2+}, b_{2-}), \dots \}
+\end{equation*}
+where $b_{i+}$ represents the size for the $i$th outgoing burst, and $b_{i-}$ represents the size for the $i$th incoming burst for sequence $s$.
+\\
+For any sensitive website $W$, \textit{Walkie-Talkie} first extract the burst sequence $s$.  
+Then, using a similar approach to Traffic Morphing~\cite{wright2009traffic}, \textit{Walkie-Talkie} chooses a decoy website $W'$ with burst sequence of $s'$.
+At the transmission time, \textit{Walkie-Talkie} reshapes the burst sequence of $s$ to sequence $\hat{s}$ such that:
+\begin{equation*}
+  (\hat{b}_{i+}, \hat{b}_{i-}) = (\max(b_{i+}, b_{i+}'), \max(b_{i-}, b_{i-}'))
+\end{equation*}
+where $\hat{b}_{i+}$, $b_{i+}$, and $b_{i+}'$ represent the size for the $i$th outgoing burst in sequences of shaped traffic $\hat{s}$, original webpage $s$, and decoy webpage $s'$ respectively.
+The same notation used for incoming burst sizes.
+Therefore, if an adversary observes the sequence $\hat{s}$, it can not ascertain whether the users accessed $W$ or $W'$.
+Choosing multiple decoy burst sequences for any sensitive can further increase the privacy of \textit{Walkie-Talkie}.
+
+Essentially, \textit{Walkie-Talkie} use as a clustering technique for shaping traffic, conceptually similar to Supersequence~\cite{wang2014supersequence}, Glove~\cite{nithyanand2014glove}, and Tamaraw~\cite{cai2014systematic}.
+It maps the traffic shapes of various web pages to the same pattern, effectively rendering them indistinguishable for potential adversaries.
+The advantages of the \textit{Walkie-Talkie} are: it adds small overheads compared to other defenses, requires minimal computation to extract the burst sequence of shaped traffic, and stores small metadata to for decoy webpages.
+On the other hand, it had several disadvantages. 
+First, \textit{Walkie-Talkie} requires browser modification.  
+Secondly, similar to most of the static traffic shaping methods, \textit{Walkie-Talkie} should identify the burst sequence of a webpage before its transmission.
+Finally, the adoption of half-duplex mode in browsers imposes a notable constraint on the scalability of this approach, as numerous applications, such as video streaming and file downloading, require multiple and simultaneous communications with web servers.
+
+
+% ---------------------------------------------------% 
+% ---------------------------------------------------% 
+% ---------------------------------------------------% 
+% ---------------------------------------------------% 
+% ---------------------------------------------------% 
 
 \subsection{Dynamic Traffic Shaping}\label{subsec:dynamic-traffic-shaping}
 In these methods, the traffic shaping defense mechanism does not require prior profiling of application traffic traces in order to perform its function.  
@@ -76,7 +115,7 @@ However, it is important to note that both the transmission rate adjustment and 
 The authors of CS-BuFLO, however, do not provide a quantification of the extent of information leakage resulting from these mechanisms
 
 
-\subsubsection{Tamaraw}
+\subsubsection{Tamaraw}\label{subsubsec:tamaraw}
 Cai et al.~\cite{cai2014systematic} conducted a systematic study on network side-channel defenses, proposing a novel notion for privacy in defense mechanisms.
 Additionally, they developed a network side-channel defense based on BuFLO~\cite{dyer2012peek} called Tamaraw. 
 We first overview their notion of privacy, and then, discuss Tamaraw defense mechanism.
