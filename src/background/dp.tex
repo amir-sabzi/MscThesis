@@ -17,7 +17,7 @@ In the rest of this section, we provide the formal definition of differential pr
 %
 
 
-\subsection{Definitions}
+\subsection{Definitions}\label{subsec:background-dp-definitions}
 A database $D$ has a fixed number of entries, where each individual data point is stored in one entry.
 Following the notation proposed by Dwork \etal \cite{dwork2014algorithmic}, we represent databases by their histograms: $D \in \dbSpace$. 
 In this representation, every entry $D_i$ of the database $D$ represents the number elements of type $i \in \mathcal{X}$.
@@ -37,20 +37,23 @@ However, Chatzikokolakis \etal \cite{chatzikokolakis2013broadening} show that DP
 \\
 To quantify the extent to which a single data point can influence the outcome of a query in worst-case, we introduce the concept of sensitivity. 
 \begin{definition}[$l_p$-Sensitivity]
+  \label{def:norm-sensitivity}
   The $l_p$-sensitivity of a query function $f$ is:
   \begin{equation*}
-    \Delta f = \max_{D, D'} \|f(D) - f(D')\|_p 
+    \Delta_p f = \max_{D, D'} \|f(D) - f(D')\|_p 
   \end{equation*}
 where $\rho(D, D') \leq 1$ (\ie $D$ and $D'$ are neighboring databases).
 \end{definition}
 \noindent
 Differential Privacy involves randomization of query outputs. We define a randomized algorithm as follows.
 \begin{definition}[Randomized algorithm]
+  \label{def:randomized-algorithm}
   A randomized algorithm $M$ with the domain $A$ and discrete range $B$, for any given $a \in A$ and $b \in B$ outputs $M(a)= b$ with probability of $(M(a))_b$.
 \end{definition}
 
 With all the necessary components in place, we are now prepared to present the formal definition of differential privacy.
 \begin{definition}[Differential privacy]
+  \label{def:dp}
   A randomized algorithm $M: \dbSpace \rightarrow \mathbb{R}$ is $(\varepsilon, \delta)$-differentially private if for all ${S} \subseteq Range(M)$ and for  all $D, D' \in \dbSpace$ such that $\rho(D, D') \leq 1$, we have:
   \begin{equation*}
     \Pr[M(D) \in S] \leq \exp(\varepsilon)\Pr[M(D') \in S] + \delta
@@ -72,7 +75,7 @@ The parameter $\delta$ determines the failure probability of a differential priv
 %%
 %
 
-\subsection{Properties}\label{subsec:dp-properties}
+\subsection{Properties}\label{subsec:background-dp-properties}
 In this section, we explore the key properties of Differential Privacy as a privacy framework.
 
 
@@ -96,7 +99,7 @@ However, this change remains within the boundaries defined by DP and does not ex
 
 % POST-PROCESSING
 \subsubsection{Post-processing}
-\label{subsubsec:post-processing}
+\label{subsubsec:background-dp-postprocessing}
 Differential Privacy guarantees are resilient to post-processing of the output from a DP algorithm.
 In fact, in the absence of any additional knowledge, the adversary is unable to undermine the guarantees of Differential Privacy simply by processing the output of the algorithm.
 \begin{proposition}
@@ -110,7 +113,7 @@ In such systems, by applying a differentially private algorithm to the informati
 We specifically utilize post-processing property of Differential Privacy in the design of both the {\sys} shaping mechanism and the {\sys} middlebox. {\addref}  
 
 % PRESERVATION UNDER ADAPTIVE SEQUENTIAL COMPOSITION.
-\subsubsection{Self-Composition}
+\subsubsection{Self-Composition}\label{subsubsec:background-dp-composition}
 The simultaneous release of results from multiple differentially private algorithms maintains the differential privacy guarantee.
 This property facilitates the modular construction of differentially private algorithms, allowing multiple DP algorithms to be combined to create more sophisticated and advanced algorithms.
 Furthermore, the composition theorem enables us to compute the privacy parameters associated with the sequential release of a differentially private algorithm output, thereby facilitating multiple releases of the same DP output.
@@ -132,3 +135,33 @@ The advanced composition theorem offers a more precise and rigorous bound for th
 It is important to note that this form of composition theorem is only applicable to differentially private algorithms that share the same privacy parameters.
 More sophisticated versions of the composition theorem exist, offering tighter privacy bounds~\cite{kairouz2015composition, mironov2017renyi}.
 We particularly use R{\'e}nyi Differential privacy to calculate the privacy loss of our differentially private shaping mechanism.
+
+\subsection{Mechanisms}\label{subsec:background-dp-mechanism}
+\Cref{def:randomized-algorithm} provides a general definition of a randomized algorithm, while \Cref{def:dp} outlines the specific criteria that a randomized algorithm must satisfy to be considered differentially private (\ie DP mechanism).
+In this section, we will explore the two most commonly used differentially private mechanisms: the Laplace mechanism and the Gaussian mechanism\cite{dwork2014algorithmic}.
+\begin{definition}[Laplace Mechanism]\label{def:laplace-mechanism}
+  Given any function $f: \dbSpace \rightarrow \mathbb{R}^k$ the Laplace mechanism is defined as:
+  \begin{equation*}
+    \mathcal{M}(x, f, \varepsilon) = f(x) + (Y_1, Y_2, \dots, Y_k)
+  \end{equation*}
+  where $Y_i$ are i.i.d random variables from Laplace distribution with probability density function of $Lap(\Delta_1 f/\varepsilon)$, and $\Delta_1 f$ is $l_1$-sensitivity of function $f$ (see \Cref{def:norm-sensitivity}).
+\end{definition}
+The Laplace mechanism is relatively easy and straightforward. 
+Intuitively, it just adds a random variable driven from a Laplace distribution to the result of the query.
+The variance of this random variable quantifies the privacy of query results, as a higher variance makes it more challenging for adversaries to infer the true result of the query.
+\begin{proposition}
+  The Laplace mechanism of \Cref{def:laplace-mechanism} is $(\varepsilon, 0)$-differentially private. 
+\end{proposition}
+\noindent
+We omit the proof here; you can refer to the work of Dwork\etalc{dwork2014algorithmic} for a detailed proof. 
+As we can see in \Cref{def:laplace-mechanism}, the failure probability of Laplace mechanism, $\delta$, is 0.
+In broad terms, a mechanism can compromise failure rate $\delta$ to add less noise to query results while achieving same values for privacy loss $\varepsilon$.
+\begin{definition}[Gaussian Mechanism]\label{def:gaussian-mechanism}
+  Given any function $f: \dbSpace \rightarrow \mathbb{R}^k$ the Gaussian mechanism is defined as:
+  \begin{equation*}
+    \mathcal{M}(x, f, \varepsilon, \delta) = f(x) + (Y_1, Y_2, \dots, Y_k)
+  \end{equation*}
+  where $Y_i$ are i.i.d random variables from Gaussian distribution $\mathcal{N}(0, \frac{2\Delta_2 f^2}{\varepsilon^2})\ln(\frac{1.25}{\delta})$, and $\Delta_2 f$ is $l_2$-sensitivity of function $f$ (see \Cref{def:norm-sensitivity}).
+\end{definition}
+We particularly design our differentially private traffic shaping mechanism using Gaussian mechanism at its core. 
+We elaborate on this in \Cref{subsec:dp-shaping-mechanism}. 

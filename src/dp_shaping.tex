@@ -29,7 +29,7 @@ The traffic pattern observed by the attacker is a post-processing of the DP quer
 
 
 \section{Definitions and Assumptions}
-\label{sec:defs}
+\label{sec:dp-shaping-definitions}
 An application's stream can be represented as a sequence of packets:
 \begin{equation}
     \istream = \{{P^S_1}, {P^S_2}, {P^S_3}, \dots \}
@@ -81,7 +81,7 @@ We utilize the L1-norm (the sum of absolute values) as our distance metric to qu
 
 
 \section{The Shaping Mechanism}
-\label{subsec:dp-queue-measurements}
+\label{subsec:dp-shaping-mechanism}
 \paragraph{From windows to intervals.}
 Based on \Cref{assumption:window} and \Cref{def:neighboring-streams}, the window length $\winlen$ affects the maximum number of bytes that can be accumulated in the buffering queue (thus, the maximum distance between stream pairs), as well as the transmission delay for the payload bytes enqueued.
 Specifically, large windows lead to high-latency bursty traffic.
@@ -132,7 +132,7 @@ We analyze the impact of different choices for these parameters on the privacy g
 Here, we focus on a formal model of the DP guarantees.
 
 \section{Privacy Guarantees}
-\label{subsec:dp-proof}
+\label{subsec:dp-shaping-guarantees}
 At a high level, analyzing the  ($\varepsilon_{\winlen}, \delta_{\winlen}$)-DP guarantee of the overall shaping mechanism requires two steps:
 \begin{enumerate}
     \item Showing that the difference in the buffering queue length is bounded for neighboring streams for all transmissions of the streams (\Cref{prop:sensitivity}).
