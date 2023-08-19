@@ -1,8 +1,10 @@
 \chapter{Background and Prior Work}\label{ch:background}
 % Background intro. Explaining what you've included in this section. 
 % TODO: update if you add more to background
-\todo{In this chapter}, we begin by discussing the problem of network side-channel attacks and exploring various proposed mitigations for such attacks. 
-Following that, we present a comprehensive definition of differential privacy (DP), outline its key properties, and highlight its primary applications, thereby setting the foundation for elucidating our differentially private traffic shaping mechanism. 
+In this chapter, we overview the required background for the thesis and summarize the related work. 
+We begin chapter by providing a background on QUIC transport protocol, which plays a pivotal role in the design and implementation of {\sys}.
+We, then, present a comprehensive definition of differential privacy (DP), outline its key properties, and highlight its primary applications, thereby setting the foundation for proposing our differentially private traffic shaping mechanism.
+Finally, we conclude this chapter by discussing the problem of network side-channel attacks and exploring various proposed mitigations for such attacks. 
 
 \section{QUIC Transport Protocol}
 \input{src/background/quic.tex}
@@ -10,10 +12,11 @@ Following that, we present a comprehensive definition of differential privacy (D
 \section{Differential Privacy}\label{sec:dp-background}
 \input{src/background/dp.tex}
 
+\section{Network Side Channel Leaks}\label{sec:ns-attacks}
+\input{src/background/sc_attacks.tex}
 \section{Network Side Channel Defenses}\label{sec:ns-defenses}
 \input{src/background/sc_defenses.tex}
 
-\section{Network Side Channel Attacks}\label{sec:ns-attacks}
 
 
 

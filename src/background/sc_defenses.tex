@@ -1,6 +1,6 @@
 % Section Intro, elaborate on the general theme of the section. 
 In this section, we explore previous mitigation approaches proposed to address network side-channel attacks. 
-We categorize these approaches into 4 general categories: 1- Static shaping methods, 2- Dynamic shaping methods, 3- Hybrid traffic shaping methods, 4- Adversarial traffic patterns. 
+We categorize these approaches into two general categories: 1- Static shaping methods, 2- Dynamic shaping methods 
 
 
 
@@ -64,11 +64,24 @@ Secondly, similar to most of the static traffic shaping methods, \textit{Walkie-
 Finally, the adoption of half-duplex mode in browsers imposes a notable constraint on the scalability of this approach, as numerous applications, such as video streaming and file downloading, require multiple and simultaneous communications with web servers.
 
 
-% ---------------------------------------------------% 
-% ---------------------------------------------------% 
-% ---------------------------------------------------% 
-% ---------------------------------------------------% 
-% ---------------------------------------------------% 
+\subsubsection{Pacer}
+When discussing our threat model for network side channel leaks in \Cref{subsec:threat-model}, we assumed that the adversary exerts control over the underlying network links, thereby enabling it to observe the victim's traffic patterns.
+However, this is not the most realistic adversarial scenario one can assume as it is hard for a malicious user to gain control over underlying network links.
+Consequently, the scope for adversarial actions becomes restricted primarily to entities of substantial scale such as large corporations and governmental bodies.
+In fact, Schuster\etalc{schuster2017beautyburst} show that an adversary who executes a JavaScript client code in the same browser as victim can accurately extract traffic pattern of the victim.
+Pacer~\cite{mehta2022pacer} extends this threat model to Cloud Infrastructures, where the adversary deliberately colocated a malicious VM with victim's VM.
+Then, the adversary reveals the shape of victim's traffic by observing the contention with the malicious VM's traffic.
+To mitigate this attack, Pacer \cite{mehta2022pacer} proposes the idea of a cloaked tunnel.
+Pacer's cloaked tunnel precisely controls the transmit time of individual
+TCP packets in accordance with the shaping schedule and congestion control
+signals.
+Thus, Pacer's tunnel endpoint requires tight integration with and
+non-trivial changes to the network stack on the end hosts.
+To shape traffic, Pacer splits a server's dataset into clusters of a minimum size $k$, while minimizing padding overhead for the dataset.
+For each cluster, Pacer then computes a traffic shape based on network traces of all cluster objects.
+As a result, within each cluster, traces are indistinguishable for the attacker. 
+Nonetheless, similar to other clustering methods, the number of traces within a cluster influences the privacy of the traces it contains.
+
 
 \subsection{Dynamic Traffic Shaping}\label{subsec:dynamic-traffic-shaping}
 In these methods, the traffic shaping defense mechanism does not require prior profiling of application traffic traces in order to perform its function.  
@@ -80,7 +93,7 @@ In this section, we provide an overview of dynamic traffic shaping methods, high
 \subsubsection{WTF-PAD}\label{subsubsec:wtf-pad}
 WTF-PAD~\cite{juarez2016toward} is a simple generalization of Adaptive Padding (AP)~\cite{shmatikov2006timing} method to be used in Tor~\cite{dingledine2004tor}. 
 The core shaping mechanism in this method is the same as adaptive padding. 
-In this method, traffic shaping works based on a state machine with three states: \textit{Wait}, \textit{Burst}, and \textit{Gap}. 
+In adaptive padding, traffic shaping works based on a state machine with three states: \textit{Wait}, \textit{Burst}, and \textit{Gap}. 
 The shaping procedure starts in \textit{Wait} state. 
 Upon receiving a packet, shaping mechanism state changes to \textit{Burst} mode. 
 WTF-PAD measures the inter-arrival time of the next packets. 
@@ -90,8 +103,7 @@ This sampled random variable serves as a timer, determining the interval at whic
 When an application sends a packet, the shaping mechanism transitions to the \textit{Burst} state. Otherwise, the mechanism remains in the \textit{Gap} state, continuing to send dummy packets at random intervals. 
 
 Although WTF-PAD pad has zero latency overhead and moderate bandwidth overheads, it provides no formal privacy guarantees.
-In fact, multiple new traffic analysis attacks are able to extract users information from their traffic pattern while WTF-PAD is deployed.
-\todo{Add the references and also mention attacks that are successful against WTF-PAD}.
+In fact, multiple new traffic analysis attacks are able to extract users information from their traffic pattern while WTF-PAD is deployed~\cite{sirinam2018df}.
 
 
 \subsubsection{BuFLO and CS-BuFLO}\label{subsubsec:buflo}
@@ -103,8 +115,7 @@ For every given webpage $W$, BuFLO sends fixed-sized packets at constant interva
 We represent packet sizes with $p$, packet frequency with $f$, and the sending duration with $T$. 
 If the packet sequence of webpage $W$ takes longer than the specified time $T$, BuFLO continues sending fixed-sized packets at fixed intervals until transmission is finished, revealing the duration of the flow. 
 When all flows have durations shorter than $T$, BuFLO effectively operates similarly to constant shaping.
-In such cases, BuFLO inherits the advantages and disadvantages associated with the constant shaping method.
-\todo{Add the references and also mention attacks that are successful against WTF-PAD}.
+In such cases, BuFLO inherits the advantages and disadvantages associated with the constant shaping method.~\cite{sirinam2018df}
 
 To address problems associated with BuFLO, Cai~\etal~\cite{cai2014cs} proposed Congestion Sensitive Buffered Fixed-Length Obfuscator (CS-BuFLO).
 CS-BuFLO enhances the BuFLO traffic shaping method by applying it bidirectionally, encompassing both the client-to-server and server-to-client directions. 
@@ -246,8 +257,5 @@ As the value of $L$ increases, Tamaraw offers enhanced privacy; however, this al
 
 
 
-\subsection{Adversarial Traffic Patterns}
 
-\subsection{Traffic Shaping Frameworks}
-\subsubsection{QCSD}
 

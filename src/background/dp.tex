@@ -164,4 +164,53 @@ In broad terms, a mechanism can compromise failure rate $\delta$ to add less noi
   where $Y_i$ are i.i.d random variables from Gaussian distribution $\mathcal{N}(0, \frac{2\Delta_2 f^2}{\varepsilon^2})\ln(\frac{1.25}{\delta})$, and $\Delta_2 f$ is $l_2$-sensitivity of function $f$ (see \Cref{def:norm-sensitivity}).
 \end{definition}
 We particularly design our differentially private traffic shaping mechanism using Gaussian mechanism at its core. 
-We elaborate on this in \Cref{subsec:dp-shaping-mechanism}. 
+We elaborate on this in \Cref{subsec:dp-shaping-mechanism}.
+
+\subsection{R\'enyi Differential Privacy}
+Despite widespread usage, straightforward interpretability,, and numerous applications of standard definition of $(\varepsilon, \delta)$-differential privacy, this concept does exhibit two primary limitations. 
+First, the presence of the failure probability $\delta$ in this definition contradicts the guarantee of  plausible deniability associated with differential privacy since with probability $\delta$ the secret can be completely exposed.    
+Secondly, as we mentioned in \Cref{subsec:background-dp-properties}, the desirable results of strong composition theorem only holds for homogeneous DP mechanisms.
+In fact, Vadhan~\etalc{murtagh2015complexity} demonstrate that the generalization of advanced composition theorem to heterogeneous DP mechanisms (\ie $(\varepsilon_i, \delta_i)$-DP for different values of $\varepsilon_i$ and $\delta_i$) is P-hard.
+To address these limitations, Mironov~\etalc{mironov2017renyi} propose a new definition of differential privacy based on the R\'enyi divergence~\cite{renyi1961measures}.
+R\'enyi differential privacy (RDP) is strictly stronger than $\varepsilon, \delta$-DP, meaning that any $\varepsilon, \delta$-DP mechanism is RDP though the reverse does not hold true.
+In this section, we explain the core concepts of R\'enyi differential privacy (RDP), elaborate on its properties, and highlight its connection to standard definition of DP.
+
+\begin{definition}[R\'enyi divergence]
+  for two probability distributions $P$ and $Q$, the R\'enyi divergence of order $\alpha > 1$ is defined as:
+  \begin{equation*}
+    D_{\alpha}(P||Q) \triangleq \frac{1}{\alpha-1} \log E_{x \sim Q}\left ( \frac{P(x)}{Q(x)} \right )
+  \end{equation*}
+\end{definition}
+R\'enyi divergence simply measure the difference between two distributions $P$ and $Q$.
+For $\alpha = \infty$, the R\'enyi divergence specifically defined as:
+\begin{equation*}
+  D_{\infty}(P||Q) \triangleq  \sup_{x \sim Q} \; \log \left ( \frac{P(x)}{Q(x)} \right ) 
+\end{equation*}
+We can see that the R\'enyi divergence with $\alpha=\infty$ is closely connected to $(\varepsilon, 0)$-DP definition.
+\begin{proposition}
+  A randomized algorithm $M: \dbSpace \rightarrow \mathbb{R}$ is $(\varepsilon, 0)$-differentially private iff for all $D, D' \in \dbSpace$ such that $\rho(D, D') \leq 1$, we have:
+  \begin{equation*}
+    D_{\infty}(P||Q) \leq \varepsilon
+  \end{equation*} 
+\end{proposition}
+\noindent Next, we provide the formal definition of R\'enyi DP.
+\begin{definition}[$(\alpha, \varepsilon)$-RDP]
+  A randomized algorithm $M: \dbSpace \rightarrow \mathbb{R}$ is $(\alpha, \varepsilon)$-RDP if for all $D, D' \in \dbSpace$ such that $\rho(D, D') \leq 1$, we have:
+  \begin{equation*}
+    D_{\alpha}(\mathcal{M}(D)||\mathcal{M}(D')) \leq \varepsilon
+  \end{equation*}
+\end{definition}
+\noindent Indeed, all the favorable attributes of the standard definition of differential privacy, including post-processing, self-composition, and robustness to auxiliary information, remain applicable to R\'enyi differential  privacy.
+Particularly, the composition theorem has a simple representation in RDP.
+\begin{proposition}[R\'enyi Composition]\label{prop:rdp-composition}
+  Let $M_i: \dbSpace \rightarrow \mathbb{R}$ be an $(\alpha, \varepsilon_i)$-RDP algorithm for $i \in [k]$. Then, the combination of these $k$ algorithms, $M_{[k]}: \dbSpace \rightarrow \Pi_{i=1}^{k}\mathbb{R}$ is $(\alpha, \sum_{i=1}^{k}\varepsilon_i)$-RDP.   
+\end{proposition}
+\noindent For an in-depth proof, we direct readers to the R'enyi differential privacy paper~\cite{mironov2017renyi}.
+As we mentioned earlier, $(\alpha, \varepsilon)$-RDP is strictly stronger than $\varepsilon, \delta$-DP. 
+Next proposition shows how RDP implies standard DP.
+\begin{proposition}\label{prop:rdp-better-than-dp}
+  If $M: \dbSpace \rightarrow \mathbb{R}$ is an $(\alpha, \varepsilon)$-RDP mechanism, it is also $(\varepsilon + \frac{\log 1/\delta}{\alpha-1}, \delta)$-DP for any $0 < \delta < 1$. 
+\end{proposition}
+\noindent \Cref{prop:rdp-better-than-dp} enables us to interpret guarantees of R\'enyi differential privacy with semantics of standard differential privacy. 
+Besides that, \Cref{prop:rdp-composition} provides us with the means to compose heterogeneous differentially private algorithms, while and at the end, with \Cref{prop:rdp-better-than-dp} we can still represent the final result using semantics of standard DP. 
+In order to compute the privacy loss (\ie $\varepsilon$) of our differentially private shaping mechanism in \Cref{sec:dp-privacy-guarantees}, we use \Cref{prop:rdp-composition} referred to as $\textrm{DP\_compose}()$.
