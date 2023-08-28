@@ -25,9 +25,11 @@ We begin chapter by providing a background on QUIC transport protocol, which pla
 We, then, present a comprehensive definition of differential privacy (DP), outline its key properties, and highlight its primary applications, thereby setting the foundation for proposing our differentially private traffic shaping mechanism.
 Finally, we conclude this chapter by discussing the problem of network side-channel attacks and exploring various proposed mitigations for such attacks. 
 
-\section{Network Side Channel Leaks}\label{sec:ns-attacks}
+\section{Network Side Channel Attacks}\label{sec:ns-attacks}
 \input{src/background/sc_attacks.tex}
 
+\section{Network Side Channel Defenses}\label{sec:ns-defenses}
+\input{src/background/sc_defenses.tex}
 
 \section{QUIC Transport Protocol}
 \input{src/background/quic.tex}
@@ -36,9 +38,10 @@ Finally, we conclude this chapter by discussing the problem of network side-chan
 \input{src/background/dp.tex}
 
 
-\section{Network Side Channel Defenses}\label{sec:ns-defenses}
-\input{src/background/sc_defenses.tex}
 
+
+\section{Threat Model}\label{sec:threat-model}
+\input{src/background/threat_model.tex}
 
 
 

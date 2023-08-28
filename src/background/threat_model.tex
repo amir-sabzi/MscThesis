@@ -1,0 +1,33 @@
+We assume that the communicating parties are inside separate trusted private networks (\eg each node is behind a VPN gateway node), which an adversary cannot compromise.
+We assume that all the application endpoints are non-malicious and do not leak the secrets themselves.
+The adversary with control over the underlying network links (e.g., Internet Service Providers) can monitor, manipulate, and record the victim's traffic pattern.
+In particular, it can precisely record the traffic shape---the sizes, timing, and direction of packets---on all links in the victim's traffic communication graph.
+Furthermore, the adversary can drop, replay, or inject packets into the victim's traffic.
+However, it cannot break standard cryptography, cannot compromise the victim's VPN, or cannot impersonate its clients or servers to directly interact with the victim (thus, no covert attacks).
+We do not consider threats due to observing the IP addresses of packets.
+We also do not consider the threat where a victim accidentally installs a malicious script in the browser, thus enabling an adversary to colocate with the
+victim's application and observe its traffic~\cite{schuster2017beautyburst,mehta2022pacer}.
+This is a reasonable assumption, since a colocated adversary can exploit many other direct or indirect channels for data leaks that will be far more efficient than {\nsc}s~\cite{kocher2018spectre, yarom2014flushreload, liu2015llcpractical, irazoqui2015ssa, vila2017loophole}.
+
+In this project, we focus on the design of {\sys}'s traffic shaping tunnel
+within a middlebox that can be placed in front of the gateway router of an
+organization. 
+Furthermore, we simulate shaping mechanism of {\sys} and evaluate its privacy and overheads.
+
+{\sys}'s trusted computing base (TCB) includes all components in the organization's private network and the middleboxes.
+We assume that the middleboxes do not directly leak application secrets to the adversary.
+We assume the cryptographic libraries are side-channel free~\cite{almeida2016verifying}.
+
+{\sys} does not address leaks of one application's sensitive data through the traffic shape of colocated applications transmitting only non-sensitive traffic.
+Such leaks may arise, for instance, due to microarchitectural interference among the applications colocated on a host or among their flows if they pass through shared links.
+Mitigating such leaks would require physically isolating the
+applications and their flows.
+For instance, a service serving both privacy-sensitive and privacy-insensitive clients may be partitioned into two instances, with each instance dedicated to serving clients with similar privacy requirements.
+For the privacy-sensitive clients, we assume the corresponding service instance agrees to serve the clients according to their privacy requirements. 
+Alternatively, end hosts could implement mitigations for various side channels to support colocated applications \cite{mehta2022pacer, page05partitionedcache, shi2011limiting, kim2012stealthmem, varadarajan2014scheduler, braun2015robust}. 
+To mitigate leaks among colocated flows at shared links, {\sys} assumes that the network paths of the sensitive and non-sensitive flows are completely partitioned.
+In practice, this limitation can be removed by combining {\sys}’s traffic shaping with TDMA scheduling \cite{beams2021ifs, vattikonda2012tdma}.
+
+
+Under these assumptions, {\sys} prevents leaks of application secrets through the sizes and the delays between the network packets transmitted in either direction between the application endpoints.
+
