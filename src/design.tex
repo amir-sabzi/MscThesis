@@ -1,62 +1,7 @@
-\chapter{Design and Implementation}\label{ch:design-implementation}
+\chapter{Design Overview}\label{ch:design}
 In this chapter we overview the design of {\sys} traffic shaping tunnel. 
 
 
-\section{DP Traffic Shaping Simulator}\label{s}
-We design and implement a traffic shaping simulator to evaluate the bandwidth overhead and privacy guarantees of {\sys} differentially private traffic shaping mechanism.
-The simulator helps the users to configure parameters of {\sys} shaping mechanism, balancing the trade-offs between privacy and overhead according to their requirement.
-They can use optimal parameters in the actual {\sys} system.
-
-
-\subsection{Simulator Components}
-In this section, we provide an overview of differentially private traffic shaping simulator we develop as part of {\sys} framework.
-We use \texttt{Python} programming language to develop the simulator. 
-The simulator has 4 major parts: 
-Inbound traffic processor where it receives and processes the collected traces.
-Streaming application, which emulates the behavior of the application that generated traffic traces.
-Single-Producer Single-Consumer Queue represents the concept of \textit{buffering queue} that we introduce in \Cref{sec:dp-shaping-definitions} as part of our shaping mechanism.
-Finally, Traffic Shaping Module implements the core shaping mechanism we explained in \Cref{subsec:dp-shaping-mechanism}.
-
-\subsubsection{Inbound Traffic Processor}\label{subsubsec:design-sim-inbound}
-The simulator takes a PCAP file as the input. 
-A PCAP (Packet Capture) file is a data file format used to store network packet data captured during network traffic analysis and packet sniffing.
-These files contain a record of various network packets exchanged between devices on a network.
-Particularly, a PCAP file contains the size and timestamp for every single packet that was part of the network traffic.
-To reconstruct the traffic shape from PCAP file, the simulator discretizes time based on a user defined parameter, referred to as data time resolution (\texttt{dtr}).
-To be more specific, simulator uses this parameter as a discretization window length to map PCAP files to a time series, where the $i^{th}$ element in the time series is the number of bytes transmitted between $(i) \times \texttt{dtr}$ and $(i+1) \times \texttt{dtr}$. 
-As the data time resolution decreases, the simulator more closely replicates the actual shape of the input traffic traces.
-We implement this functionality, as well as preprocessing of the input data, as part of the \texttt{DataProcessor} class in simulator code {\addref}.
-
-\subsubsection{Streaming Application}\label{subsubsec:design-simulator-app}
-We develop a simulated application that transmits data based on the time series extracted from PCAP files. 
-More precisely, at intervals of $\texttt{dtr}$ seconds, the application dispatches a quantity of bytes determined by the input time series.
-The application continues sending bytes until it either finishes input traces or it receives a termination signal from traffic shaping module.
-Based on the input trace, simulated application can simulate both server and client side traffic shape.
-We implement the simulated application as \texttt{Application} class in simulator.
-
-\subsubsection{Single-Producer Single-Consumer Queues}\label{subsubsec:design-sim-spsc-queue}
-In \Cref{sec:dp-shaping-definitions}, we introduce the concept of \textit{buffering queue} to control the maximum information accessible by adversary within a predefined window of time.
-We implement this concept in simulator as a simple single-consumer single-producer queue.
-The producer is the streaming application we explained in \Cref{subsubsec:design-simulator-app}.
-The consumer of this queue is our DP traffic shaping module.
-Every $\texttt{dtr}$ seconds, the simulated application push specified number of bytes based on the input trace into the queue.
-We define a parameter, \texttt{shaping interval}, corresponding to the intervals of $T$ seconds we introduced in \Cref{subsec:dp-shaping-mechanism}.
-Every $T$ seconds, the shaping module dequeues data with a size determined by
-DP traffic shaping mechanism.
-
-
-
-\subsubsection{Traffic Shaping Module}
-Traffic shaping module is the core part of our simulator where we implement the differentially private traffic shaping mechanism.
-Every $T$ seconds, traffic shaping module determines the number of bytes to be transmitted as the shaped traffic based on a DP measurement on the size of the application queue, $\qlendp$.
-We define DP parameters and frequency of measurement in the simulator configuration file. 
-Then, it dequeues $\payload = \min(\qlendp, \qlen)$ from the queue, where $\qlen$ is the number of available bytes in the queue at the measurement time. 
-If $\qlendp$ is larger that $\payload$, the traffic shaping module adds $\dummy = \qlendp - \payload$ bytes of dummy to the transmitted traffic.
-We, further, extend the traffic shaping module to implement constant-rate and Pacer~\cite{mehta2022pacer} traffic shaping to compare overheads and privacy of these approaches with {\sys}. 
-
-
-
-\subsection{Simulator configuration and Parameters}
 
 
 
@@ -139,7 +84,7 @@ The Shaper accumulates the outbound bytes of an application flow in a buffering 
 Within a tunnel, the Shaper transmits bytes from all active flows into a differentially-private packet sequence.
 At periodic intervals, called DP measurement intervals, it performs a DP measurement on the per-flow queues to determine the number of bytes $\qlendp$ to be~transmitted according to the tunnel's DP parameters.
 It prepares a {\em shaped buffer} consisting of $\payload$ payload bytes and $\dummy$ dummy bytes, where $\payload$ is the minimum of $\qlendp$ and the application bytes available in the buffering~queues, and $\dummy = \qlendp - \payload$, which may lie between 0 and $\qlendp$.
-The Shaper then passes the buffer with the position and length of the padding to QUIC.
+The Shaper then passes the buffer with the position and length of the padding to QUIC. We simulate the functionality of this component with our traffic shaping simulator in \Cref{sec:eval-simulator}.
 
 QUIC transforms the shaped buffer into one or more STREAM frames based on the
 congestion window, the flow window of the receiver endpoint, and the MTU
@@ -152,8 +97,7 @@ QUIC forwards the packets to the UDP layer, which subsequently transmits the pre
 If the preparation time for a buffer exceeds the interval, the Shaper discards the buffer.
 This ensures that the buffering queue length does not grow significantly, which in turn controls the overhead incurred due to DP shaping.
 We evaluate the impact of the length of the buffering queue and the DP
-measurement interval on privacy guarantees, bandwidth overheads, and latency
-overheads in {\addref}.
+measurement interval on privacy guarantees and bandwidth overheads using our simulator in \Cref{ch:evaluation}.
 
 \paragraph{Inbound traffic processing.}
 A tunnel endpoint receives shaped packets from the tunnel and applies inverse

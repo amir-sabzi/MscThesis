@@ -1,2 +1,8 @@
 \chapter{Abstract}
 \label{ch:abstract}
+Many Internet applications depend exclusively on end-to-end encryption of network traffic as the primary means to guarantee the users' privacy.
+However, encryption alone cannot prevent {\em network side-channel attacks}---leaks of sensitive information through the sizes and timing of network packets.
+We present {\sys}, a traffic shaping framework to mitigate network side-channel attacks.
+{\sys}’s traffic shaping provides differential privacy guarantees, allowing users to adjust the trade-off between privacy guarantees and bandwidth overhead according to their specific requirements.
+We design {\sys} as a modular tunnel endpoint that can be deployed anywhere along the path of traffic.
+We implement a simulator to assess the privacy and bandwidth trade-offs of our framework and demonstrate its applicability in a video streaming and a web service and its effectiveness in thwarting state-of-the-art network side-channel attacks.

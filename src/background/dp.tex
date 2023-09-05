@@ -110,7 +110,7 @@ In fact, in the absence of any additional knowledge, the adversary is unable to 
 This implies that regardless of the complexity of a procedure, as long as the inputs are differentially private, the output is guaranteed to maintain the same level privacy.
 The post-processing property of Differential Privacy can be especially advantageous when dealing with systems that have information bottlenecks, such as situations where results from multiple calculations are aggregated at a single stage.
 In such systems, by applying a differentially private algorithm to the information bottleneck, the guarantee of Differential Privacy extends to the output of the entire system. 
-We specifically utilize post-processing property of Differential Privacy in the design of both the {\sys} shaping mechanism and the {\sys} middlebox. {\addref}  
+We specifically utilize post-processing property of Differential Privacy in the design of both the {\sys} shaping mechanism and the {\sys} middlebox. 
 
 % PRESERVATION UNDER ADAPTIVE SEQUENTIAL COMPOSITION.
 \subsubsection{Self-Composition}\label{subsubsec:background-dp-composition}
@@ -205,7 +205,26 @@ Particularly, the composition theorem has a simple representation in RDP.
 \begin{proposition}[R\'enyi Composition]\label{prop:rdp-composition}
   Let $M_i: \dbSpace \rightarrow \mathbb{R}$ be an $(\alpha, \varepsilon_i)$-RDP algorithm for $i \in [k]$. Then, the combination of these $k$ algorithms, $M_{[k]}: \dbSpace \rightarrow \Pi_{i=1}^{k}\mathbb{R}$ is $(\alpha, \sum_{i=1}^{k}\varepsilon_i)$-RDP.   
 \end{proposition}
-\noindent For an in-depth proof, we direct readers to the R'enyi differential privacy paper~\cite{mironov2017renyi}.
+\noindent For an in-depth proof, we direct readers to the R\'enyi differential privacy paper~\cite{mironov2017renyi}.
+So far, we explained three methods to calculate the aggregated privacy loss of multiple releases of differentially-private mechanism.
+These methods are basic composition theorem, advanced combination theorem, and R\'enyi composition theorem.
+The goal of these methods is to provide a tight, accurate bound on aggregated privacy loss without overestimation. 
+In simpler terms, a composition theorem is superior to another, if it can provably show that the aggregated privacy loss of a differentially-private mechanism, after multiple release of results, is smaller than the aggregated privacy loss indicated by the other mechanism.
+A natural question is: \textit{What is the difference between all these mechanisms?}
+To answer these questions, we calculate the privacy loss reported by these mechanisms for different number of queries (\ie varying number of differentially-private releases of results).
+We fix epsilon and delta per query $0.2$ and $0.0001$ respectively, and report the final privacy loss for a given number of queries.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{plots/composition_comparison.pdf}
+  \caption{Aggregated privacy loss of multiple queries reported by different composition methods}
+  \label{fig:composition-comparison}
+\end{figure}
+
+\Cref{fig:composition-comparison} compares different methods for composing privacy loss of DP mechanisms.
+We can see the effectiveness of R\'enyi methods as compared to others across all values for number of queries.
+Advanced composition theorem also outperforms basic composition theorem for larger number of queries. 
+
+
 As we mentioned earlier, $(\alpha, \varepsilon)$-RDP is strictly stronger than $\varepsilon, \delta$-DP. 
 Next proposition shows how RDP implies standard DP.
 \begin{proposition}\label{prop:rdp-better-than-dp}

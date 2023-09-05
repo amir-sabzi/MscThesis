@@ -1,31 +1,31 @@
 
-\chapter{Differentially Private Traffic Shaping}
+\chapter{Differentially-Private Traffic Shaping}
 \label{ch:dp-shaping}
 % Chapter Introduction
-Traffic shaping can be implemented at different layers within the network stack of an application.
-At the transport layer, shaping involves dynamically adjusting the data transmission rate, specifically the size of data transmitted within a given time window, to ensure that the size and timing of data transmission do not disclose sensitive information of the applications.
-At the network layer, traffic shaping is about transmitting packets in a manner that does not reveal users' private information through the timing and sizing of the packets. 
-The selection of either approach has profound implications for both the design of shaping algorithm and the traffic shaping system itself.
-Designing traffic shaping mechanism at network layer requires determining the size and transmission of every individual packets. 
-Networking hardware capabilities, such as popular NICs, and network protocol specifications significantly constrain the design space in this context~\cite{mehta2022pacer}.  
-On the other hand, to design a traffic shaping mechanism that operates on the top of transport layer, it is crucial to assume that \textit{after traffic shaping, the shaped traffic remains unaffected by the content or pattern of the unshaped traffic, during all subsequent processes such as encryption, packetization, and packet transmission scheduling}.
-This assumption guarantees that the shaping mechanism maintains its integrity and effectively separates the sensitive information from the traffic pattern regardless the way network stack transmits the shaped traffic.
-{\sys} performs differentially private traffic shaping on the top of transport layer, and in section {\addref} we elaborate on how our system satisfies this assumption.
+% Traffic shaping can be implemented at different layers within the network stack of an application.
+% At the transport layer, shaping involves dynamically adjusting the data transmission rate, specifically the size of data transmitted within a given time window, to ensure that the size and timing of data transmission do not disclose sensitive information of the applications.
+% At the network layer, traffic shaping is about transmitting packets in a manner that does not reveal users' private information through the timing and sizing of the packets. 
+% The selection of either approach has profound implications for both the design of shaping algorithm and the traffic shaping system itself.
+% Designing traffic shaping mechanism at network layer requires determining the size and transmission of every individual packets. 
+% Networking hardware capabilities, such as popular NICs, and network protocol specifications significantly constrain the design space in this context~\cite{mehta2022pacer}.  
+% On the other hand, to design a traffic shaping mechanism that operates on the top of transport layer, it is crucial to assume that \textit{after traffic shaping, the shaped traffic remains unaffected by the content or pattern of the unshaped traffic, during all subsequent processes such as encryption, packetization, and packet transmission scheduling}.
+% This assumption guarantees that the shaping mechanism maintains its integrity and effectively separates the sensitive information from the traffic pattern regardless the way network stack transmits the shaped traffic.
+% {\sys} performs differentially-private traffic shaping on the top of transport layer, and in section {\addref} we elaborate on how our system satisfies this assumption.
  
-The objective of our DP traffic shaping is to dynamically adapt the data transmission rate based on the available data stream, while simultaneously ensuring that the DP guarantees remain intact for any information that an attacker can observe, as specified in our threat model {\addref}.
-We further extend 
+
+The objective of our DP traffic shaping is to dynamically adapt the data transmission rate based on the available data stream, while simultaneously ensuring that the DP guarantees remain intact for any information that an attacker can observe, as specified in our threat model (See \Cref{sec:threat-model}).
 The design of our traffic shaping algorithm relies on three key steps.
 %
-First, we formalize the information available to an attacker observing an application stream, which is all information such as packet sizes or timing at the finest granularity of observation.
+First, in \Cref{sec:dp-shaping-definitions}, we formalize the information available to an attacker observing an application stream, which is all information such as packet sizes or timing at the finest granularity of observation.
 We propose to use a buffering queue to collapse all this information into a sufficient statistic to adapt {\sys}'s transmission rate: the size of data in the queue waiting to be transmitted through our shaping mechanism.
 %
-Second, we show how to perform {\em DP measurements} of our buffering queue, in order to adapt \sys's transmission rate with DP guarantees.
+Second, in \Cref{subsec:dp-shaping-mechanism}, we show how to perform {\em DP measurements} of our buffering queue, in order to adapt \sys's transmission rate with DP guarantees.
 We show that during data transmission with {\sys} shaping mechanism, the change of queue size is bounded, allowing us to perform DP measurements.
 %
-Third, we describe our decision mechanism for sending data based on DP decisions, which completes our DP shaping mechanism.
+Third, we describe our decision mechanism for sending data based on DP decisions, which completes our DP shaping mechanism in \Cref{sec:dp-privacy-guarantees}.
 Intuitively, we can use DP queue measurements and public information such as network conditions to decide the amount of data to transmit.
 Transmissions contain applications' queued data when some is available, and dummy data otherwise.
-The traffic pattern observed by the attacker is a post-processing of the DP queries issued on the queue (depends on the private data only through the DP measurements), and is differentially private.
+The traffic pattern observed by the attacker is a post-processing of the DP queries issued on the queue (depends on the private data only through the DP measurements), and is differentially-private.
 
 
 \section{Definitions and Assumptions}
@@ -47,7 +47,7 @@ In other words, we assume:
   All bytes enqueued prior to or at time $t$ are transmitted by time
   $t+W$.
 \end{assumption}
-We explain how to realize this assumption in a tunnel design in {\addref}.
+We explain how to realize this assumption in a tunnel design in \Cref{ch:design}.
 Under this assumption, the privacy loss of the complete traffic stream is simply a DP composition of the privacy losses over consecutive windows.
 The window length $\winlen$ is a configuration parameter, which is set before the start of an application's transmission. In practice, $\winlen$ would be in the order of a few seconds.
 
@@ -122,13 +122,13 @@ Suppose that when transmitting $\streamw{j}$ (similarly $\streamw{j}'$), the que
     Given this noise distribution, one measurement is \mbox{$(\epsilon_\dpintvl, \delta_\dpintvl)$-DP}.
     \item Data in the shaped buffer is then split into one or more packets and transmitted to the network. Since these packets are a post-processing of the DP-shaped buffer, they preserve DP as long as no new dependency on private data is introduced. 
     This last constraint requires the packets' size and transmit time to be selected independently of the data.
-    We describe how {\sys} enforces this constraint in {\addref}.
+    We describe how {\sys} enforces this constraint in \Cref{ch:design}.
 \end{enumerate}
 The privacy loss ($\varepsilon_{\winlen}$) and bandwidth overheads of the DP shaping (represented by $\sigma_\dpintvl$, \ie the standard deviation of the noise distribution function) depend on $\winlen$, $\ssens$, and the number of intervals $\varnumupdates = \numupdates$ in $\winlen$.
 Additionally, the latency overheads depend on $\dpintvl$.
 Note that for a specific value of $\ssens$ and $\varnumupdates$, the DP guarantee $\varepsilon_{\winlen}$ is fully specified by $\sigma_\dpintvl$, and remains the same even at different time scales.
 That is, scaling $\winlen$ and $\dpintvl$ proportionally does not change the privacy and overhead costs.
-We analyze the impact of different choices for these parameters on the privacy guarantees and overheads in \addref.
+We analyze the impact of different choices for these parameters on the privacy guarantees and overheads in \Cref{sec:eval-privacy-params}.
 Here, we focus on a formal model of the DP guarantees.
 
 \section{Privacy Guarantees}
@@ -316,16 +316,108 @@ order to achieve the privacy loss for the entire window of length $\winlen$.
 Formally, we have:
 \begin{proposition}\label{prop:dp}
     {$\sys$} enforces $(\varepsilon_{\winlen}, \delta_{\winlen})$-DP, 
-    \\ 
     with $\varepsilon_{\winlen}, \delta_{\winlen} \triangleq
     \textrm{DP\_compose}(\varepsilon_T, \delta_T, \numupdates)$.
 \end{proposition}
 \begin{proof}
-    By Prop. \ref{prop:sensitivity}, the sensitivity of each measurement is at most $\ssens$.
+    By \Cref{prop:sensitivity}, the sensitivity of each measurement is at most $\ssens$.
     By the Gaussian DP mechanism, the measured queue size $\qlendpt{k}$ in each interval $k$ of length $\dpintvl$ is $(\varepsilon_{T}, \delta_{T})$-DP.
     Using DP composition over $\numupdates$ $(\varepsilon_{T}, \delta_{T})$-DP measurements, and the fact that $\ostream$ is a post-processing of DP measurements, yields the ($\varepsilon_{\winlen}, \delta_{\winlen}$)-DP over any $\winlen$ length window.
 \end{proof}
-We use R\'enyi-DP composition on the Gaussian mechanism for $\textrm{DP\_compose()}$.
+We use R\'enyi-DP composition (see \Cref{prop:rdp-composition}) on the Gaussian mechanism for $\textrm{DP\_compose()}$.
 Note that the overhead (\ie noise added) due to DP does not depend on the number of streams: the overhead is the same regardless of the number of streams transmitted through the buffering queue simultaneously.
 
+\section{Comparison of DP and Tamaraw Notion of Privacy}
+Differential privacy is not the only notion of privacy proposed to provide theoretical guarantee against network side-channel attacks.
+As we mentioned, Tamaraw \cite{cai2014tamaraw} provides a
+mathematical notion of privacy guarantee of a shaping strategy, called $\gamma$-security. 
+We elaborate on their notion of privacy in \Cref{subsec:dynamic-traffic-shaping}
+In this section, we show that $(\varepsilon, \delta_{\winlen})$-DP definition is strictly stronger than Tamaraw's $\gamma$-security definition.
 
+\begin{proposition}
+  Tamaraw $\gamma$-privacy is strictly weaker than the notion of $(\varepsilon, 0)$-differential privacy.
+\end{proposition}
+\noindent
+To prove the above proposition, we need to prove the following two lemmas.
+
+\begin{lemma-numbered}
+  There exists a Tamaraw $\gamma$-private defense mechanism that fails to satisfy $(\varepsilon, 0)$-differential privacy for any given value of $\varepsilon$.
+\end{lemma-numbered}
+\begin{proof}
+%  Assume a closed-world setup of $n$ webpages.
+    Consider a web service with a dataset of $n$ web pages.
+    We propose the following defense mechanism, $D$, with two parameters $\alpha$ and $\beta$:
+    \begin{enumerate}
+    \item For the webpage $w_i: i=j$, $D$ reshapes it to the constant-rate pattern, $O_c$, with probability $\beta$. Otherwise, with probability $1-\beta$, it reveals the original traffic pattern of the webpage, $T_{w_{i=j}}$.
+    \item For any webpage $w_i: i \in \{1, 2, \dots, j-1, j+1, \dots, n\}$, $D$ reshapes it to the constant-rate pattern, $O_c$, with probability $\alpha$ such that $\alpha > {e^{\varepsilon}}\beta$. Otherwise, $D$ reveals the original pattern of $w_i$, $T_{w_{i\neq j}}$, with probability $\alpha$.
+    \end{enumerate}
+    The probability that any attack can correctly identify the label for webpage $w_j$ is upper-bounded by:
+
+    \begin{align*}
+      & \Pr[A(T^{D}_{w_{i=j}}) = w_j]
+      \\
+      & = \Pr[A(T^D_{w_{i=j}}) = w_j | T^D_{w_{i=j}}=T_{w_{i=j}}]\Pr[T^D_{w_{i=j}}=T_{w_{i=j}}] +
+      \\
+      &~~~~\Pr[A(T^D_{w_{i=j}}) = w_j | T^D_{w_{i=j}}=O_c]\Pr[T^D_{w_{i=j}}=O_c]
+      \\
+      & \leq  1.(1-\beta) + \frac{1}{n}\beta = p_c^j
+    \end{align*}
+    For $(1- \frac{n\gamma - 1}{n-1}) < \beta$ we have: $p_c^j \leq \gamma$.
+    \\
+    Similarly, the probability that any attack can correctly classify $w_{i\neq j}$ is upper-bounded by $p_c^i = 1-\alpha + \frac{\alpha}{n}$, and for $(1- \frac{n\gamma - 1}{n-1}) < \alpha$ we have: $p_c^j \leq \gamma$.
+    Therefore, for all values of $\alpha$ and $\beta$ such that $(1- \frac{n\gamma -
+    1}{n-1}) < \beta < \alpha$, the probability that any attack can successfully
+    guess victim traffic stream in both cases is less than $\gamma$, and
+    the defense is uniformly $\gamma$-private.
+    \\
+    When the output of the algorithm is a constant pattern, $O_{c}$, with the probability $\beta$ the original webpage is $j$, and with probability $\alpha$, it can be any other webpages. Thus, we have:
+    \begin{equation*}
+    \log(\frac{\Pr[T_{w_{i\neq j}}^{D}=O_{c}]}{\Pr[T_{w_{i=j}}^{D}=O_{c}]})
+    = \log(\frac{\alpha}{\beta}) > \varepsilon
+    \end{equation*}
+  Therefore, it fails to guarantee $\varepsilon$-differential privacy.
+\end{proof}
+
+
+\begin{lemma-numbered}
+  A $(\varepsilon, 0)$-differentially private shaping algorithm is Tamaraw $\gamma$-private for:
+  \begin{equation*}
+    \varepsilon \leq \log(n\gamma)
+  \end{equation*}
+\end{lemma-numbered}
+\begin{proof}
+  For a given trace, $w$, the random variable $T_{w}^{DP}$ represents packet
+  trace of $w$ after  a differentially private shaping mechanism is applied.
+  \\
+  The classification attack on shaped traffic analysis the shaped traces so it can be considered as post-processing of the results of a
+  differentially private shaping mechanism (i.e. defense), and is differentially
+  private. Therefore,
+  we have:
+  \begin{align*}
+    \frac{\Pr[A(T_{w_{i}}^{DP}) = w_i]}{\Pr[A(T_{w_{j}}^{DP}) = w_i]} \leq e^
+    {\varepsilon}
+    \\
+    \rightarrow \Pr[A(T_{w_{i}}^{DP}) = w_i] \leq e^
+    {\varepsilon} .\Pr[A(T_{w_{j}}^{DP}) = w_i]
+  \end{align*}
+  Intuitively, this implies that the likelihood of the attacker correctly classifying the trace with label $i$ compared to incorrectly classifying it with label $j$ is bounded by $e^{\varepsilon}$.
+  The above inequality is correct for all $w_j: j\in \{1, 2, \dots, n\}$, therefore we can calculate the summation over $j$.
+  Extending the above equation we have:
+  \begin{align*}
+    n\times \Pr[A(T_{w_{i}}^{DP}) = w_i] \leq e^{\varepsilon}\sum_{j=1}^{n} \Pr[A(T_{w_{j}}^{DP}) = w_i] \\
+    = e^{\varepsilon} \operatorname{Pr}_{A}[w_i]
+  \end{align*}
+  where $\Pr_{A}[w_i]$ is the probability that attack $A$ outputs the label
+  $w_i$.
+  Therefore, for any given trace $w_i$, the probability that any attack $A$, classifies it correctly is bounded by:
+  \begin{equation*}
+    \Pr[A(T_{w_{i}}^{DP}) = w_i] \leq \frac{e^{\varepsilon} \Pr_{A}[w_i]}{n}
+  \end{equation*}
+  Therefore, the probability that an attacker can guess the victim’s trace is bounded by:
+  \begin{align*}
+    \max_{w_i}{\Pr[A(T_{w_{i}}^{DP}) = w_i]} \leq \frac{e^{\varepsilon}}{n} \max_{w_i}{\operatorname{Pr}_{A}[w_i]} \leq \frac{e^{\varepsilon}}{n} \leq \gamma
+  \end{align*}
+\end{proof}
+\noindent
+Putting the two lemmas together, we prove that the notion of differential
+privacy is strictly stronger than Tamaraw's.

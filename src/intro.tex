@@ -68,9 +68,15 @@ Furthermore, in a bidirectional communication, applications can configure privac
 Additionally, it provides robust theoretical privacy guarantees for traffic shaping, ensuring that the privacy of users remains intact even in the face of future attacks.
 We design {\sys} as a modular traffic shaping tunnel endpoint that can be seamlessly integrated with any network stack along the path of traffic, providing flexibility and adaptability.
 To enhance the scalability of {\sys}, we position it within a middlebox, enabling it to deliver privacy guarantees for multiple applications with low overheads. 
-{\sys}' design is also application-agnostic, as it eliminates the need for modifications on the end-hosts. 
+{\sys}' design is also application-agnostic, as it eliminates the need for modifications on the end-hosts.
+We simulate the \emph{Outbound Traffic Shaping} component of our design and assess the bandwidth overheads and privacy trade-offs of {\sys} using it.
 
-\todo{ADD: introduction conclusion paragraph}
+The rest of the thesis is organized as follows: 
+In \Cref{ch:background} we explain the background knowledge necessary for the thesis and provide a comprehensive overview of related work in the field.
+In \Cref{ch:dp-shaping} we propose our differentially-private shaping mechanism and prove its privacy guarantees. We further compare the notion of Differential Privacy with Tamaraw~\cite{cai2014systematic} notion of privacy in this chapter.
+\Cref{ch:design} provides a brief overview of the tunnel design. 
+We implement a simulator that simulates outbound traffic shaping component of our tunnel and evaluate the bandwidth overheads and empirical privacy guarantees of {\sys} using this simulator in \Cref{ch:evaluation}.
+We conclude the thesis by discussing the limitations of {\sys} and future research directions in \Cref{ch:conclusion}. 
 
 
 % Section 4: Distinctions

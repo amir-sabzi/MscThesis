@@ -49,7 +49,7 @@ Specifically, each traffic segment can be represented as a tuple $(t_i, b_i)$, w
 A traffic analysis attack involves the attempt to infer the content of traffic from its observed pattern, which is essentially a sequence modeling task.
 At the inference stage, Beauty and the burst~\cite{schuster2017beautyburst} utilizes a convolutional neural network (CNN) architecture to classify videos based on the time-series representation of observed traffic.
 The architecture of Burst and Beauty model is represented in \Cref{fig:bandb-arch}. 
-We evaluate this architecture with our dataset in section {\addref}.
+We evaluate this architecture with our dataset in section \Cref{sec:eval-empirical-privacy}.
 \begin{figure}[t]
   \centering
   %\includegraphics[width=\columnwidth]{figures/DPshaping_concept_vertical.pdf}
@@ -59,28 +59,13 @@ We evaluate this architecture with our dataset in section {\addref}.
   \label{fig:bandb-arch}
 \end{figure}
 
+\subsection{Website Fingerprinting}
+Website fingerprinting is similar to video identification in essence.
+In website fingerprinting attacks, the attacker goal is to map the victim's packet sequence to the website victim visits at the time. 
+Deep Neural Networks (DNNs) are shown to be effective in website fingerprinting attacks~\cite{sirinam2018df}.
+However, due to the differences in characteristics of website traffic as compared to video streaming applications, website fingerprinting attacks use different set of features and model architectures. 
+A notable contrast distinguishing video from web traffic traces is the comparatively shorter duration of web traces as opposed to the more extended durations typical of video traces.
+Sirinam~\etalc{sirinam2018df} show that a small CNN with one convolutional layer is able to map users' traffic to their content with 98\% accuracy.
+They further show that their model is able to achieve 90\% accuracy in presence of WTF-PAD~\cite{juarez2016wtfpad} defense mechanism, and it achieves 49.7\% accuracy when Walke-Talkie is deployed.
+This highlights the ineffectiveness of ad-hoc shaping mechanism in face of emerging attacks.
 
-\subsection{TCN-based Video identification}
-\todo{Move it to somewhere else to highlight that it is your contribution}
-Beauty and the Burst~\cite{schuster2017beautyburst} uses a CNN-based architecture to for video identification. 
-Convolutional neural networks have been shown to be effective in sequence modeling for decades~\cite{hinton1990connectionist}.
-However, there are two problems with using a convolutional neural network as a sequence modeler.
-First, convolutional layers applied to a sequence are not inherently causal, meaning that they look into future samples of a sequence to decide the output for the current sample.
-Secondly, in contrast to recurrent neural networks(RNNs)~\cite{elman1990finding}, convolutional neural networks lack a deep effective history size of past samples in the sequence (i.e. their effective history is bounded to the number of samples that kernel can cover from the past).
-To address these problems, Bai\etalc{bai2018empirical} proposed a new architecture called Temporal Convolutional Network (TCN).
-The TCN utilizes a one-dimensional fully-convolutional network~\cite{long2015fully} equipped with causal dilated convolutions~\cite{oord2016wavenet}, allowing it to examine deep into the past to produce an output for the sequence at any given moment.
-They added a generic residual block from input to output.
-The architecture is shown in the \Cref{fig:tcn-arch}.
-We evaluate the effectiveness of TCN model for network side-channel attacks in {\addref}
-
-
-
-
-\begin{figure}[t]
-  \centering
-  %\includegraphics[width=\columnwidth]{figures/DPshaping_concept_vertical.pdf}
-  %\includegraphics[width=\columnwidth]{figures/DPshaping_concept_horizontal.pdf}
-  \includegraphics[width=\columnwidth]{figures/TCN_arch.pdf}
-  \caption{TCN model architecture.}
-  \label{fig:tcn-arch}
-\end{figure}

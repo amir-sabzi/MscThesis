@@ -1,0 +1,47 @@
+\chapter{Conclusion}\label{ch:conclusion}
+{\sys} is a novel mitigation for side-channel attacks. 
+It relies on the strong notion of differential privacy to provide theoretical privacy guarantees, while introducing minimal overheads. 
+{\sys} is extensively configurable, allowing users to change the privacy-utility trade-offs based on their requirements across different range of applications. 
+We are confident that {\sys} has the potential to put an end to the arms race in network side-channel attacks and defenses.  
+Furthermore, we have designed {\sys} in a modular fashion, ensuring that it can be deployed seamlessly at any point along the traffic path without requiring any modifications to the application itself. 
+
+We conclude the thesis by providing an overview of {\sys}'s limitations and elaborating on potential future directions for this project.
+
+\section{{\sys} Limitations}\label{sec:conclusion-limitations}
+\paragraph{Client-Server Communication Model.}
+A specific limitation of {\sys} is its communication model, which assumes all communication between the client and server passes through a single differentially-private traffic shaping tunnel.
+In situations where a single client communicates with multiple servers via different tunnels, the correlation between these communications has the potential to result in additional information leakage.
+Current communication model inherently fails to capture the privacy loss of such scenarios, leading to lower-than-expected privacy guarantees.
+
+\paragraph{Lack of Anonymization.}
+{\sys} does not provide complete anonymity.
+Specifically, it does not capture the privacy loss due temporal correlation across multiple tunnels.
+When a client sends a message to a server that traverses multiple independent instances of the {\sys} tunnel, the temporal correlation between the traffic shaping in these tunnels can inadvertently leak information. 
+Using this information, the adversary can reveal the communication parties.
+
+\paragraph{Middlebox and Trusted Computing Base.}
+{\sys} assumes the traffic shaping middlebox to be trusted and bug-free.
+Nonetheless, it's essential to acknowledge that the middlebox itself may be susceptible to various types of attacks and implementation flaws. Incorporating the middlebox hardware and software stack into the trusted computing base without conducting a rigorous assessment of its correctness and security could introduce vulnerabilities.
+
+\section{Future Research Directions}\label{sec:conclusion-future}
+\paragraph{Multi-Party Correlated Communication.}
+As a future research direction, DP guarantees of {\sys} can be extended to multi-party communication, when the communication between parties are not necessarily independent.
+In many internet applications,  simultaneous communications with distinct entities are interdependent.
+For example, many businesses use online advertising platforms such as Google Ads to create and run ads on various websites.
+Therefore, every time a user requests the website, the web browser retrieves content from both the web server hosting the website and the online advertising platform that hosts the website's Ads.   
+This is, in fact, an example of a one-to-many correlated communication setup.
+In standard definition of differential privacy, we assume data points to be independent.  
+However, measuring the privacy loss when entries of database are correlated is challenging. 
+This is an interesting future path for research.
+
+\paragraph{{\sys} and Programmable Networks.}
+We propose a design for {\sys} based on proxy model, where it receives traffic, decapsulates it, performs DP shaping, encapsulates data, and sends it over the tunnel.
+Implementing this functionality at the application layer results in increased end-to-end communication latency, as each packet must traverse the kernel network four times before arriving at the destination.
+Recent advances in programmable networking devices such as programmable NICs and programmable switches~\cite{meier2022ditto} provides an opportunity to offload DP shaping mechanism to the network hardware, which can potentially reduce the latency of {\sys}.
+
+\paragraph{optimized DP Shapnig.}
+Current DP shaping mechanism, measures the queue size every $\dpintvl$ seconds.
+We know that based on the composition theorem privacy loss increase with every measurement of the queue size. 
+However, if the queue size does not significantly change between intervals, DP shaping mechanism can use the measurement of the previous interval without further increasing the privacy loss. 
+This is the foundation of new, more sophisticated DP mechanism, known as Sparse Vector Technique for Differential Privacy~\cite{lyu2016understanding}. 
+Adapting this form of DP mechanism for our DP shaping is an exciting direction for future research.

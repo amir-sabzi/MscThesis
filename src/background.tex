@@ -19,11 +19,10 @@
 % - Threat Model
 % Background intro. Explaining what you've included in this section. 
 % TODO: update if you add more to background
-In this chapter, we provide an overview of the required background for the thesis and summarize the related work.
-\todo{Provide forward references to sections in this paragraph} 
-We begin chapter by providing a background on QUIC transport protocol, which plays a pivotal role in the design and implementation of {\sys}.
-We, then, present a comprehensive definition of differential privacy (DP), outline its key properties, and highlight its primary applications, thereby setting the foundation for proposing our differentially private traffic shaping mechanism.
-Finally, we conclude this chapter by discussing the problem of network side-channel attacks and exploring various proposed mitigations for such attacks. 
+
+We begin this chapter by discussing the problem of network side-channel attacks in \Cref{sec:ns-attacks} and exploring various proposed mitigations for such attacks in \Cref{sec:ns-defenses}.
+We, then, present a comprehensive definition of differential privacy (DP), outline its key properties, and highlight its primary applications, thereby setting the foundation for proposing our differentially private traffic shaping mechanism in \Cref{sec:dp-background}.
+Finally, in \Cref{sec:background-quic} we conclude this chapter by providing a brief overview of QUIC protocol, which plays a pivotal role in the design of {\sys}.
 
 \section{Network Side Channel Attacks}\label{sec:ns-attacks}
 \input{src/background/sc_attacks.tex}
@@ -31,11 +30,13 @@ Finally, we conclude this chapter by discussing the problem of network side-chan
 \section{Network Side Channel Defenses}\label{sec:ns-defenses}
 \input{src/background/sc_defenses.tex}
 
-\section{QUIC Transport Protocol}
-\input{src/background/quic.tex}
-
 \section{Differential Privacy}\label{sec:dp-background}
 \input{src/background/dp.tex}
+
+\section{QUIC Transport Protocol}\label{sec:background-quic}
+\input{src/background/quic.tex}
+
+
 
 
 

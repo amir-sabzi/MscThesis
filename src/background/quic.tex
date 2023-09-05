@@ -50,18 +50,18 @@ The stream header within a packet is encrypted, ensuring that adversaries are un
 Either of endpoints can terminate streams by sending a \texttt{STREAM\_RESET} frame to the other one.
 In a bidirectional stream, both endpoints should send \texttt{STREAM\_RESET} message to completely terminate a stream.
 
-\subsection{QUIC Congestion and Flow Control}
-\subsubsection{Flow Control}
-To prevent a fast or malicious sender from overwhelming receivers' buffer, receivers must proactively limit the amount of data a sender can send.
-QUIC can perform flow control at two levels: The receiver controls the maximum amount of data the sender can send on a per-stream basis, as well as across all streams within a connection. 
-The receiver sets the initial limits for stream and connection flow controls during the handshake. 
-During the handshake, the receiver establishes the initial limits for both stream and connection flow controls. Throughout the connection, if the receiver needs to adjust the limits for a specific stream, it sends \texttt{MAX\_STREAM\_DATA} frames to the sender.
-Similarly, to change the limit for overall connection, the receiver sends \texttt{MAX\_DATA} frames to the sender.
+% \subsection{QUIC Congestion and Flow Control}
+% \subsubsection{Flow Control}
+% To prevent a fast or malicious sender from overwhelming receivers' buffer, receivers must proactively limit the amount of data a sender can send.
+% QUIC can perform flow control at two levels: The receiver controls the maximum amount of data the sender can send on a per-stream basis, as well as across all streams within a connection. 
+% The receiver sets the initial limits for stream and connection flow controls during the handshake. 
+% During the handshake, the receiver establishes the initial limits for both stream and connection flow controls. Throughout the connection, if the receiver needs to adjust the limits for a specific stream, it sends \texttt{MAX\_STREAM\_DATA} frames to the sender.
+% Similarly, to change the limit for overall connection, the receiver sends \texttt{MAX\_DATA} frames to the sender.
 
-\subsubsection{Congestion Control}
-QUIC does not standardize any specific method of congestion control.
-Instead, it provides the necessary feedback mechanism to implement congestion control.
-The modular design of congestion control makes QUIC more flexible, allowing applications to implement a congestion mechanism that aligns with their specific requirements.
-As the default congestion control mechanism, however, QUIC uses a sender specified congestion controller similar to TCP NewReno~\cite{rfc6582}.
-Given the limitations of this thesis, a comprehensive explanation of TCP NewReno is outside its scope.
-For a more in-depth understanding of this mechanism, we kindly refer readers to the RFC, which provides detailed information and insights.
+% \subsubsection{Congestion Control}
+% QUIC does not standardize any specific method of congestion control.
+% Instead, it provides the necessary feedback mechanism to implement congestion control.
+% The modular design of congestion control makes QUIC more flexible, allowing applications to implement a congestion mechanism that aligns with their specific requirements.
+% As the default congestion control mechanism, however, QUIC uses a sender specified congestion controller similar to TCP NewReno~\cite{rfc6582}.
+% Given the limitations of this thesis, a comprehensive explanation of TCP NewReno is outside its scope.
+% For a more in-depth understanding of this mechanism, we kindly refer readers to the RFC, which provides detailed information and insights.
