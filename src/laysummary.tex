@@ -15,8 +15,8 @@ However, encryption cannot protect against a class of attacks called network sid
 These attacks use the packet sizes and their timing in the network to infer sensitive information about users.
 One way to counter these attacks is through \emph{traffic shaping}, where the packet sizes and timing are modified to hide users' private information from the attacker.
 However, balancing between privacy and overhead can be tricky.
-To address this, we introduce a novel network side-channel mitigation framework called {\sys}.
-It dynamically reshapes users' traffic at regular intervals, ensuring privacy remains intact even during long communication sessions.
+To address this challenge, we introduce a novel network side-channel mitigation framework called {\sys}.
+It dynamically reshapes users' traffic at regular intervals, ensuring privacy remains intact even over long durations of transmission.
 {\sys} allows users to balance the trade-off between privacy, overhead, and latency effectively.
 It defeats state-of-the-art traffic analysis attacks.
 Furthermore, {\sys} uses differential privacy to provide formal and quantifiable privacy guarantees, protecting users' private information from future, more sophisticated attacks.

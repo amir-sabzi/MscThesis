@@ -1,47 +1,44 @@
-The simulator has 4 major parts: 
-Inbound traffic processor where it receives and processes the collected traces.
-Streaming application, which emulates the behavior of the application that generated traffic traces.
-Single-Producer Single-Consumer Queue represents the concept of \textit{buffering queue} that we introduce in \Cref{sec:dp-shaping-definitions} as part of our shaping mechanism.
-Finally, Traffic Shaping Module implements the core shaping mechanism we explained in \Cref{subsec:dp-shaping-mechanism}.
+We design and implement a traffic shaping simulator to evaluate the bandwidth overhead and privacy guarantees of {\sys}'s.
+The simulator helps users to find parameters of {\sys} shaping mechanism that balance the trade-offs between privacy and overhead according to their requirement.
+They can use these parameters in the actual {\sys} system, which we designed in \Cref{sec:tunnel-design} and implemented as part of NetShaper paper \cite{netshaper}.
+The simulator specifically simulates the functionality of \emph{Outbound Traffic Shaping} component of a tunnel endpoint to evaluate the privacy and bandwidth overheads of our DP shaping strategy.
+The simulator consists of four major components: the Inbound Traffic Processor, responsible for receiving and processing collected traces; the Streaming Application, which emulates the behavior of the application that generated the traffic traces; the Single-Producer Single-Consumer Queue, representing the concept of the buffering queue introduced in \Cref{sec:dp-shaping-definitions} as part of our shaping mechanism; and finally, the Traffic Shaping Module, which implements the core shaping mechanism explained in \Cref{subsec:dp-shaping-mechanism}.
 
 
 \paragraph{Inbound Traffic Processor}\label{subsubsec:design-sim-inbound}
 The simulator takes a PCAP file as the input. 
-A PCAP (Packet Capture) file is a data file format used to store network packet data captured during network traffic analysis and packet sniffing.
-These files contain a record of various network packets exchanged between devices on a network.
-Particularly, a PCAP file contains the size and timestamp for every single packet that was part of the network traffic.
-To reconstruct the traffic shape from PCAP file, the simulator discretizes time based on a user defined parameter, time resolution.
-Time resolution defines the finest level of time granularity upon which simulator operators rely.
-For instance, if we define this resolution as $1ms$, simulator maps the input trace to a time series, where $i$\textsuperscript{th} element of time series represent the number of bytes transmitted between $i$\textsuperscript{th} and $(i+1)$\textsuperscript{th} millisecond of data transmission.
-As the data time resolution decreases, the simulator more closely replicates the actual shape of the input traffic traces.
-We implement this functionality, as well as preprocessing of the input data, as part of the \texttt{DataProcessor} class in simulator code~\cite{netshaper_repo}.
+A PCAP file contains the size and timestamp for every packet that exchanged during a communication session.
+To reconstruct the traffic shape from a PCAP file, the simulator discretizes time based on a user defined parameter, \emph{time resolution}.
+The \emph{Time resolution} defines the finest level of time granularity upon which the simulator relies.
+For instance, if we define \emph{time resolution} as $1ms$, the simulator maps the input trace to a time series, where the $i$\textsuperscript{th} element of time series represent the number of bytes transmitted between the $i$\textsuperscript{th} and the $(i+1)$\textsuperscript{th} millisecond of data transmission (the time series is zero when nothing is sent).
+As the data \emph{time resolution} decreases, the simulator more closely replicates the actual shape of the input traffic.
+We implement this functionality, as well as preprocessing of the input data, as part of the \texttt{DataProcessor} class in simulator~\cite{netshaper_repo}.
 
 
 
 \paragraph{Streaming Application}\label{subsubsec:design-simulator-app}
 We develop a simulated application that transmits data based on the time series extracted from PCAP files. 
-More precisely, at intervals defined by time resolution of the simulator, the application transmits a quantity of bytes determined by the input time series.
-The application continues sending bytes until it either finishes input traces or it receives a termination signal from traffic shaping module.
+More precisely, at intervals defined by the \emph{time resolution} of the simulator, the application transmits a quantity of bytes determined by the input time series.
+The application continues sending bytes until it either finishes the input traces or it receives a termination signal from the traffic shaping module.
 Based on the input trace, simulated application can simulate both server and client side traffic shape.
-We implement the simulated application as \texttt{Application} class in simulator.
+We implement the simulated application as the \texttt{Application} class in the simulator.
 
 \paragraph{Single-Producer Single-Consumer Queues}\label{subsubsec:design-sim-spsc-queue}
-In \Cref{sec:dp-shaping-definitions}, we introduce the concept of \textit{buffering queue} to control the maximum information accessible by adversary within a predefined window of time.
-We implement this concept in simulator as a simple single-consumer single-producer queue.
-The producer is the streaming application we explained in \Cref{subsubsec:design-simulator-app}.
-The consumer of this queue is our DP traffic shaping module.
-The simulated application, as the producer for this queue, pushes specified number of bytes based on the input trace into the queue.
-We define a parameter, \texttt{shaping interval}, corresponding to the intervals of $T$ seconds we introduced in \Cref{subsec:dp-shaping-mechanism}.
+In \Cref{sec:dp-shaping-definitions}, we introduced the \textit{buffering queue} to control the maximum information accessible by an adversary in a predefined time window.
+We implement this in the simulator as a simple single-consumer, single-producer queue.
+The producer is the streaming application, and
+the consumer is our DP traffic shaping module.
+The simulated application, as the producer for this queue, pushes a specified number of bytes, based on the input trace, into the queue.
+We define a parameter, \emph{shaping interval}, corresponding to the intervals of $T$ seconds we introduced in \Cref{subsec:dp-shaping-mechanism}.
 Every $T$ seconds, the shaping module dequeues data with a size determined by
-DP traffic shaping mechanism.
+the DP traffic shaping mechanism.
 
 
 
 \paragraph{Traffic Shaping Module}
-Traffic shaping module is the core part of our simulator where we implement the differentially private traffic shaping mechanism.
-Every $T$ seconds, traffic shaping module determines the number of bytes to be transmitted as the shaped traffic based on a DP measurement on the size of the application queue, $\qlendp$.
-We define DP parameters and frequency of measurement in the simulator configuration file. 
+The traffic shaping module is the core part of our simulator where we implement the differentially private traffic shaping mechanism.
+Every $T$ seconds, the traffic shaping module determines the number of bytes to be transmitted based on a DP measurement on the size of the application queue, $\qlendp$.
 Then, it dequeues $\payload = \min(\qlendp, \qlen)$ from the queue, where $\qlen$ is the number of available bytes in the queue at the measurement time. 
-If $\qlendp$ is larger that $\payload$, the traffic shaping module adds $\dummy = \qlendp - \payload$ bytes of dummy to the transmitted traffic.
-We, further, extend the traffic shaping module to implement constant-rate and Pacer~\cite{mehta2022pacer} traffic shaping to compare overheads and privacy of these approaches with {\sys}. 
+If $\qlendp$ is larger that $\payload$, the traffic shaping module adds $\dummy = \qlendp - \payload$ bytes of dummy data to the transmitted traffic.
+We also extend the traffic shaping module to implement constant-rate and Pacer~\cite{mehta2022pacer} traffic shaping to allow comparison between these approaches and {\sys}. 
 

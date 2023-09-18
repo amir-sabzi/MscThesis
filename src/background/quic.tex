@@ -1,54 +1,15 @@
 
 QUIC is a modern transport layer protocol specifically developed to enhance the performance of HTTPS traffic~\cite{langley2017quic}.
-In the traditional IP stack model, QUIC encompasses both the Transport layer and the Application layer.
-In other words, QUIC is a user-space transport layer protocol built on top of UDP. 
 Using UDP packets as the transport layer carrier allows QUIC packets to traverse current network infrastructure developed for TCP/UDP protocols such as middleboxes.
 On the top of UDP, QUIC provides transport functionalities of flow control, loss recovery, encryption, and congestion control.
 Unlike TCP, QUIC mitigates head-of-the-line blocking delays by introducing a novel data structuring abstraction known as streams. 
 QUIC is now standardized under RFC 9000~\cite{rfc9000}, and the details of design and implementation of the protocol is well beyond the scope of this thesis.
-We, however, provide a brief overview of QUIC features and functionalities that are relevant to the design of {\sys}.
-
-
-
-
-\subsection{QUIC Connections}
-A QUIC connection is a shared state between a client and a server.
-At the initiation of each connection, a handshake phase takes place where the two endpoints engage in a cryptographic handshake protocol~\cite{rfc9001} to establish a shared secret and negotiate the application protocol.
-This handshake process ensures mutual consent for communication and establishes connection parameters.
-
-Each connection has two unique IDs, source connection ID, and destination connection ID.
-By assigning each connection unique identifiers (ID), the potential changes in addressing layers at lower network levels, such as UDP and IP, do not result in incorrect packet delivery at the receiving endpoint.
-Furthermore, routers can leverage existence of destination connection ID to route QUIC packets in the network to the correct endpoint.
-During the handshake, one endpoint establishes the Source Connection ID by setting it in the packet header.
-Similarly, the other endpoint determines the Destination Connection ID.
-
-QUIC provides three ways to terminate a connection: idle timeout, immediate close, and stateless reset.
-Each endpoint can specify an idle timeout in its transport parameters.
-If the idle timeout duration elapses without any data exchange between the endpoints, the endpoint will silently close the connection (\ie without explicitly notifying the other endpoint). 
-The other connection termination method is the immediate close. 
-To promptly terminate the connection, an endpoint transmits \texttt{CONNECTION\_CLOSE} frame. 
-This frame triggers the immediate termination of all streams within the connection.
-Upon sending a \texttt{CONNECTION\_CLOSE} frame, the sender promptly terminates the connection without waiting for acknowledgment from the receiver.
-A stateless reset is available as a fallback choice for an endpoint that lacks access to the connection state.
-In cases of a crash or outage, it is possible for endpoints to continue sending data to an endpoint that cannot properly maintain the connection.
-In such cases, the endpoint without the connection state issues the stateless reset, terminating the connection and its state machine locally.
-
-
-
-
-\subsection{QUIC Streams}
 QUIC's streams offer a lightweight and ordered way for applications to send byte-streams.
 These streams can be either unidirectional or bidirectional, depending on the specific needs of the application.
 Within a connection, each stream is identified with a new ID.
-A stream ID is 62 bit integer.
-Either of endpoints can create a stream just by sending data with a new stream ID. 
-There are no restrictions on the number of simultaneous streams (other than, of course, the maximum number of unique IDs) or the length of each individual stream.
-QUIC assigns different priorities to different streams based on the applications' requirement.
-The prioritization of streams within a connection can have a substantial impact on the performance of applications.
-Each stream has a dedicated header with 5 major fields: Type, Stream ID, Offset, and Data Length.
+Each stream has a unique header with 5 major fields: Type, Stream ID, Offset, and Data Length.
 The stream header within a packet is encrypted, ensuring that adversaries are unable to discover the active streams in a connection.
-Either of endpoints can terminate streams by sending a \texttt{STREAM\_RESET} frame to the other one.
-In a bidirectional stream, both endpoints should send \texttt{STREAM\_RESET} message to completely terminate a stream.
+Either of endpoints can terminate streams.
 
 % \subsection{QUIC Congestion and Flow Control}
 % \subsubsection{Flow Control}

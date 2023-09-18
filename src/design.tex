@@ -1,19 +1,22 @@
 \chapter{Design Overview}\label{ch:design}
-In this chapter we overview the design of {\sys} traffic shaping tunnel. 
-
-
+The previous chapter described an abstract differentially private traffic shaping strategy.
+We, now, present \sys's traffic shaping tunnel.
+In \Cref{sec:tunnel-overview}, we elaborate on the design of our traffic shaping tunnel,  outlining the essential design criteria for a DP shaping tunnel.
+Within this context, we introduce a specific design based on a transport-layer proxy architecture.
+In \Cref{sec:tunnel-design}, we elaborate on the operations supported by our tunnel design, encompassing tunnel setup and teardown, connection establishment and termination, as well as outbound traffic shaping.
+Finally, in \Cref{sec:eval-simulator}, we conclude this chapter by introducing a traffic shaping simulator that simulates the functionality of the outbound traffic shaping component of our tunnel.
 
 
 
 \section{Traffic Shaping Tunnel}\label{sec:tunnel-overview}
-
-The previous section describes an abstract differentially private traffic shaping strategy.
-We now present \sys's traffic-shaping tunnel.
-
-A tunnel must address three requirements. First, it must satisfy DP guarantees. For this, the tunnel~must complete DP measurements and prepare shaped packets within each interval, and it must be able to transmit all payload bytes generated from an application within a finite window length (as defined in the DP strategy).
+We start this section by outlining a set of requirements that a tunnel design for differentially-private traffic shaping should fulfill.
+A tunnel must address three requirements.
+First, it must satisfy DP guarantees. 
+For this, the tunnel~must complete DP measurements and prepare shaped packets within each interval, and it must be able to transmit all payload bytes generated from an application within a finite window length (as defined in the DP strategy).
 %
 Secondly, the payload and dummy bytes in the shaped packets must be indistinguishable to an adversary.
-For this, the payload and dummy bytes must be transmitted through a shared transport layer so that they are identically acknowledged by the receiver and subject to congestion control and loss recovery mechanisms.
+For this, the tunnel should use a secure encryption protocol to encrypt both data and dummy.
+Besides that, the payload and dummy bytes must be transmitted through a shared transport layer so that they are identically acknowledged by the receiver and subject to congestion control and loss recovery mechanisms.
 %
 Finally, the tunnel must provide similar levels of reliability, congestion control, and loss recovery as expected by the application.
 \begin{figure}[t]
@@ -27,54 +30,56 @@ Finally, the tunnel must provide similar levels of reliability, congestion contr
   }
   \label{fig:minesvpn-overview}
 \end{figure}
-
 \Cref{fig:minesvpn-overview} shows the design of one endpoint of {\sys}’s traffic shaping tunnel. A similar endpoint is deployed on the other end of the tunnel.
 The shape of the traffic in the tunnel can be configured independently in each direction. The privacy loss in bidirectional streams is the DP composition of the privacy loss in each direction.
-A tunnel endpoint consists of a shaping layer (Shaper) on top of QUIC, which in turn runs on top of a standard UDP stack
+A tunnel endpoint consists of a shaping layer (Shaper) on top of QUIC, which in turn runs on top of a standard UDP stack. 
+The first requirement should be fulfilled in the implementation of the tunnel, which falls outside the scope of this thesis.
+Our design satisfies the second requirement because QUIC deploys encryption for all data transmission, and both data and dummy are sent through a single QUIC connection, ensuring that the receiver identically acknowledges them. 
+Finally, QUIC implements congestion control and loss recovery similar to a normal TCP connection, satisfying the third requirement.
+
 It's worth mentioning that aside from QUIC/UDP, {\sys} has the option to utilize a conventional TCP stack as well.
+We have specifically chosen QUIC over TCP for the connection between tunnel endpoints because its concept of streams (as discussed in \Cref{sec:background-quic}) allows us to distinguish between dummy and data at the receiver side without the need for additional headers.
 The tunnel endpoints establish a bidirectional QUIC connection and generate DP-sized transmit buffers in fixed intervals, which carry payload bytes from one or more application flows.
 In the absence of application payload, a tunnel endpoint transmits dummy bytes, which are discarded at the other endpoint.
 QUIC encrypts all outbound packets.
 
-{\sys} adopts a transport-layer proxy architecture: each application terminates a connection with its local tunnel endpoint.
+{\sys} adopts a transport-layer proxy architecture: each application terminates a connection with the endpoint connected to it.
 The application byte stream is sent to the remote application over three piecewise connections: 
 (i) between the application and its local tunnel endpoint,
 (ii) between the tunnel endpoints, and
 (iii) between the remote tunnel endpoint and the remote application.
 This ensures only one active congestion control and reliable delivery mechanism in the tunnel and that all bytes are subject to identical mechanisms.
-We discard tunneling TCP through TCP and use QUIC as TCP-in-TCP tunneling causes TCP meltdown~\cite{honda2005tcpovertcp, tcp-meltdown} problem.
+We rely on the transport-layer proxy architecture and discard tunneling TCP through TCP as TCP-in-TCP tunneling causes TCP meltdown~\cite{honda2005tcpovertcp, tcp-meltdown} problem.
 In a TCP-in-TCP tunnel, when the network experiences packet loss, the lower-layer TCP initiates packet retransmission to ensure delivery.
 However, the upper-layer TCP protocol is unaware of this packet loss and wrongly interprets the increased delay as a sign of a slow network, leading it to decrease the transmission rate.
 Consequently, this slower transmission causes the lower-layer TCP protocol to receive acknowledgments too slowly, further mistaking it as packet loss within the network, and thus triggering retransmission.
-This repetitive cycle creates a detrimental effect on network performance known as the TCP meltdown problem, significantly degrading overall efficiency.
-The other option was to use TCP-in-UDP tunnel. 
+This repetitive cycle creates a detrimental effect on network performance known as the TCP meltdown problem~\cite{tcp-meltdown}, significantly degrading overall efficiency.
+The other option was to use a TCP-in-UDP tunnel. 
 This, however, violates the privacy guarantees of {\sys}.
-In case of packet losses, the application TCP protocol retransmits data to guarantee data delivery. 
-On the other hand, the dummy bytes that are injected in the traffic shaping tunnel are not retransmitted, making them observable for adversary. 
+In presence packet loss, the application TCP protocol retransmits data to guarantee data delivery. 
+While, the dummy bytes that are injected in the traffic shaping tunnel are not retransmitted, making them observable for adversary. 
 
 
 \section{Tunnel Design and Operations}\label{sec:tunnel-design}
-In this section, we present an overview of the fundamental operations that a well-designed {\sys} tunnel should encompass.
+Now, we describe the fundamental operations that a well-designed {\sys} tunnel must support.
 Irrespective of its implementation, a {\sys} tunnel must offer a set of essential functionalities, including tunnel setup and teardown, connection establishment and termination, outbound traffic shaping, and inbound traffic processing. 
-In the following subsections, we delve into each of these critical functionalities to provide an understanding of their significance and roles within the system.
 
 \paragraph{Tunnel setup and teardown}
-Before applications can communicate with each other, a {\sys} tunnel must be set up between their local tunnel endpoints.
-The initiator application sends a configuration message to its local tunnel endpoint with the source and destination IP addresses and ports, a reliability flag, and a privacy descriptor.
-The reliability flag indicates if the tunnel should provide reliable delivery semantics or not.
+Before applications can communicate with each other, a {\sys} tunnel must be set up between their local tunnel endpoints (as described in \Cref{fig:minesvpn-overview}).
+The initiator application can optionally send a configuration message to its local tunnel endpoint with the source and destination IP addresses and ports, and a privacy descriptor.
 The privacy descriptor indicates the DP parameters to be used for shaping the tunnel traffic.
 
-Upon receiving a configuration message, the Shaper establishes a QUIC connection with the remote tunnel endpoint and configures the reliability semantics and privacy parameters for each direction.
+Upon receiving a configuration message, the local tunnel endpoint establishes a QUIC connection with the remote tunnel endpoint and configures privacy parameters for each direction.
 It also initializes three types of bidirectional~streams in the tunnel: control, dummy, and data streams.
-One {\em control stream} is used to transmit messages related to the establishment and termination of a connection between the application endpoints. A
-{\em dummy stream} transmits dummy in QUIC packets in the form of STREAM frames.
+One {\em control stream} is used to transmit messages related to the establishment and termination of a connection between the application endpoints. 
+A {\em dummy stream} transmits dummy in QUIC packets in the form of STREAM frames.
 We should note that we do not use QUIC's PADDING frames as they do not elicit acknowledgements and hence are distinguishable from STREAM frames \cite{rfc9000}.
 The tunnel pre-configures a finite number of data streams, which carry payload bytes from one or more application flows.
 When the tunnel is inactive for a period of time, one of the tunnel endpoints initiates a termination sequence and closes all open QUIC streams and the tunnel connection.
 
 \paragraph{Connection establishment and termination}
 Once a tunnel is ready, applications can establish and terminate connections with each other, which is mediated by the tunnel.
-When the initiator application runs a connection establishment handshake with its local tunnel endpoint, the Shaper maps the application flow to a per-flow buffering queue and one of the inactive QUIC data streams in the tunnel, and notifies the remote tunnel endpoint.
+When the initiator application runs a connection establishment handshake with its local tunnel endpoint, the Shaper maps its flow to a per-flow buffering queue and one of the inactive QUIC data streams in the tunnel, and notifies the remote tunnel endpoint.
 The remote tunnel endpoint establishes a connection with the receiver application and maps the receiver application's flow with the data stream.
 The connection termination handshake is handled similarly by the tunnel endpoints.
 The messages for connection establishment and termination are transmitted over the control stream in the tunnel and shaped according to the tunnel's parameters.
@@ -82,7 +87,7 @@ The messages for connection establishment and termination are transmitted over t
 \paragraph{Outbound traffic shaping.}
 The Shaper accumulates the outbound bytes of an application flow in a buffering queue before it transmits them in packets whose sizes and timing follow a distribution that guarantees DP.
 Within a tunnel, the Shaper transmits bytes from all active flows into a differentially-private packet sequence.
-At periodic intervals, called DP measurement intervals, it performs a DP measurement on the per-flow queues to determine the number of bytes $\qlendp$ to be~transmitted according to the tunnel's DP parameters.
+At periodic intervals, called DP measurement intervals, the Shaper performs a DP measurement on the per-flow queues to determine the number of bytes $\qlendp$ to be~transmitted according to the tunnel's DP parameters.
 It prepares a {\em shaped buffer} consisting of $\payload$ payload bytes and $\dummy$ dummy bytes, where $\payload$ is the minimum of $\qlendp$ and the application bytes available in the buffering~queues, and $\dummy = \qlendp - \payload$, which may lie between 0 and $\qlendp$.
 The Shaper then passes the buffer with the position and length of the padding to QUIC. We simulate the functionality of this component with our traffic shaping simulator in \Cref{sec:eval-simulator}.
 
@@ -107,3 +112,5 @@ sends an ACK to the sender. Subsequently, it decrypts the packet, discards the
 dummy frame, and forwards the payload bytes from the remaining STREAM frames to
 the application.
 
+\section{Traffic Shaping Simulator}\label{sec:eval-simulator}
+\input{src/evaluation/simulator.tex}

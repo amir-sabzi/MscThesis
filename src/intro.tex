@@ -7,44 +7,45 @@
 % Section 1: Motivation
 %% At a high level, what is the problem area you are working in and why is it important? 
 %% It is important to set the larger context here. Why is the problem of interest and importance to the larger community?
-For years, Internet applications solely relied on end-to-end encryption of network traffic to ensure security and privacy.
+For years, Internet applications relied solely on end-to-end encryption of network traffic to ensure security and privacy.
 Transport Layer security (TLS) protocol, for example, is widely used in different applications such as email, VoIP, and most notably HTTPS~\cite{rfc2818}.
 TLS utilizes block cipher algorithms, such as AES, to ensure data confidentiality.
-Block ciphers operate on fixed-sized data blocks of using a key and produce output blocks of the same size, revealing the size of the data before encryption. 
-\\  
+Block ciphers operate on fixed-sized data blocks using a key and produce output blocks of the same size, revealing the size of the data before encryption. 
 Employing provably secure data encryption methods is effective in concealing the content of traffic.
-However, monitoring users' \textit{traffic shape} (\ie packet sizes and timing) in the network reveals the size of their data and its transmission time.
-When the \textit{traffic shape} is correlated with the content, and adversary in control of the underlying network links (\eg an Internet Service Provider) can monitor the traffic shape and thereby potentially infer the content of the communication.
-Previous studies have demonstrated that the traffic shape is indeed highly correlated with the content, and it can inadvertently reveal a variety of sensitive information, including the video being watched~\cite{schuster2017beautyburst}, the websites visited by users~\cite{wang2014supersequence, bhat2019varcnn}, and even the content of VoIP calls~\cite{white2011phonotactic}.
-In literature, this type of privacy attack is commonly known as network side-channel attacks.
+However, monitoring the shape of transmitted data (\ie packet sizes and timing) in the network reveals the size of their data and its transmission time.
+When the traffic shape is correlated with the content, an adversary capable of monitoring traffic across underlying network links (e.g., an Internet Service Provider) can monitor the traffic shape, potentially inferring the content of the communication.
+Previous studies have demonstrated that the traffic shape is indeed highly correlated with its content, and it can inadvertently reveal a variety of sensitive information.
+For example, attackers can identify the videos that a user watched~\cite{schuster2017beautyburst}, the websites that users had access to~\cite{wang2014supersequence, bhat2019varcnn}, and even the content of their VoIP calls~\cite{white2011phonotactic}."
+In the literature, this type of attack is commonly known as a network side-channel attack.
 
 
 
 % Section 2: Elaboration
 % What is the specific problem considered in this paper? 
 % This section narrows down the topic area of the thesis. In the first section you have established general context and importance. Here you establish specific context and background.
-One approach to mitigate network side-channel attacks is shaping application's traffic to decouple application secrets from the sizes and timing of the application's network packets.
+One approach to mitigate network side-channel attacks is shaping application's traffic to decouple application secrets (\ie contents of the application's data) from the sizes and timing of the application's network packets.
 In this method, a program actively modifies the traffic shape to ensure that the pattern of data transmission is independent of the content.  
 One na\"ive strategy for traffic shaping is to adjust the traffic shape to a constant-rate transmission.
-To maintain constant-rate data transmission, shaping program sends dummy traffic when the traffic rate is lower than the target constant-rate. Additionally, it buffers data when the traffic rate surpasses the established constant transmission rate.
-While constant-rate traffic shaping provides utmost privacy, it unavoidably results in either significant bandwidth overhead, substantial latency overhead, or both, depending on the configured traffic rate.
-This is due to the transmission of large amounts of dummy traffic even when there is no actual data to be transmitted~\cite{saponas2007devices}.
+To maintain constant-rate data transmission, the shaping program sends dummy traffic when the traffic rate is lower than the target constant-rate. Additionally, it buffers data when the traffic rate surpasses the established constant transmission rate.
+While constant-rate traffic shaping provides privacy, it unavoidably results in either significant bandwidth overhead, substantial latency overhead, or both, depending on the traffic rate.
+In particular, the transmission of substantial volumes of dummy traffic, even when there is no real data to be sent, can result in significant bandwidth overhead~\cite{saponas2007devices}.
+Additionally, buffering data to maintain the constant rate can potentially cause latency overhead.
+
 
 An alternate approach is to modify the traffic shape to a variable-rate shape, thereby altering the trade-offs between privacy and overheads.
-These shaping strategies either dynamically adjust the traffic shape at the transmission time to obfuscate original traffic pattern~\cite{cai2014csbuflo, juarez2016wtfpad}, or reshape the traffic to follow a predefined pattern~\cite{wright2009traffic,wang2017walkie}.
+These shaping strategies either dynamically adjust the traffic shape at the transmission time to obfuscate the original traffic pattern~\cite{cai2014csbuflo, juarez2016wtfpad}, or reshape the traffic to follow a predefined pattern~\cite{wright2009traffic,wang2017walkie}.
 Variable-rate shaping strategies aim to decrease bandwidth and latency overheads at the expense of potentially compromising privacy.
 However, relying on ad-hoc heuristics to decrease the overhead may potentially result in overestimating the privacy of a traffic shaping mechanism in the face of emerging attacks.~\cite{sirinam2018df}. 
-Specifically, balancing  the trade-off between privacy and  can be challenging without a proper method to quantitatively measure and evaluate privacy guarantees. 
+Specifically, balancing  the trade-off between privacy and overhead is challenging without a proper method to quantitatively measure and evaluate privacy guarantees. 
 
 Recent advances in machine learning (ML) have significantly enhanced attackers' ability to accurately map the traffic shape to its corresponding content~\cite{schuster2017beautyburst, bhat2019varcnn, sirinam2018df}.
 To particularly address ML-based attacks, one approach is to introduce adversarial noise~\cite{shan2021dolos, nasr2021blind, rahman2020mockingbird} into the traffic traces.
-In this approach, the shaping program injects specific patterns of dummy data (\ie adversarial noise) into the users' traffic.
-These patterns are crafted to obfuscate traffic traces and make it more challenging for ML model to infer the content of the traffic by observing its shape. 
-Both Ad-hoc traffic shaping heuristics and adversarial noise lack formal privacy guarantees and rely on the assessment of privacy through existing network side-channel attacks.
-As attacks continue to evolve and become more sophisticated, certain older defense mechanisms~\cite{wang2017walkie,cai2014csbuflo} fail to be effective against newer ML-based attacks~\cite{sirinam2018df}, leading to an ongoing arms race between attackers and defense mechanisms.
-To address aforementioned problems, a proper defense mechanism against traffic analysis attacks should offer two fundamental properties while adding minimal overheads: 
+These noise patterns are crafted to obfuscate traffic traces and make it more challenging for an ML model to infer the content of traffic by observing its shape. 
+This method, however, lacks formal privacy guarantees and evaluates the privacy empirically, through their ability to hide data from known network side-channel attacks.
+As attacks evolve and become more sophisticated, older defense mechanisms~\cite{wang2017walkie,cai2014csbuflo} fail to be effective against newer ML-based attacks~\cite{sirinam2018df}, leading to an arms race between attackers and defense mechanisms.
+To address these problems, a proper defense mechanism against traffic analysis attacks should offer two fundamental properties while adding minimal overheads: 
 First, it should provide theoretical privacy guarantees to ensure future, more sophisticated attacks cannot breach the privacy of users.
-Secondly, it should allow users to balance the trade-off between privacy and overheads.
+Second, it should allow users to balance the trade-off between privacy and overhead.
 
 
 
@@ -58,25 +59,24 @@ Secondly, it should allow users to balance the trade-off between privacy and ove
 %%% - our framework uses DP for: 1- quantitative privacy guarantee, 2- future-proof guarantees
 %%% - it is dynamic, and therefore, it does not need traffic monitoring 
 %%% - we design it to be an independent (module?) that can be deployed anywhere along the path of traffic, we decided to implement in a middebox 
-In this work, we introduce a novel framework called {\sys} for network side-channel mitigation.
-Our framework leverages the concept of differential privacy (DP) to provide formal privacy guarantees.
-{\sys} applies traffic shaping in periodic intervals, achieving DP guarantees at granularity of these intervals. 
-These per-interval DP guarantees can be composed together to quantify the overall privacy of an application stream based on the length of the stream.
-By relying upon a quantifiable notion of privacy, {\sys} offers extensive configurability, enabling applications to effectively manage the trade-offs between privacy, bandwidth overhead, and latency of communication.
-Furthermore, in a bidirectional communication, applications can configure privacy/overhead parameters of each direction independently.
-{\sys} defeats the state-of-the-art traffic analysis attacks.
-Additionally, it provides robust theoretical privacy guarantees for traffic shaping, ensuring that the privacy of users remains intact even in the face of future attacks.
-We design {\sys} as a modular traffic shaping tunnel endpoint that can be seamlessly integrated with any network stack along the path of traffic, providing flexibility and adaptability.
-To enhance the scalability of {\sys}, we position it within a middlebox, enabling it to deliver privacy guarantees for multiple applications with low overheads. 
-{\sys}' design is also application-agnostic, as it eliminates the need for modifications on the end-hosts.
-We simulate the \emph{Outbound Traffic Shaping} component of our design and assess the bandwidth overheads and privacy trade-offs of {\sys} using it.
+In this work, we introduce a novel framework called {\sys} for mitigating network side-channel attacks.
+Our framework leverages the concept of differential privacy (DP) to offer formal privacy guarantees.
+{\sys} applies traffic shaping at periodic intervals, achieving DP guarantees at granularity of these intervals. 
+These per-interval DP guarantees can be composed to quantify the overall privacy of an application stream, which depends on the stream's length.
+Relying on a quantifiable notion of privacy, {\sys} offers extensive configurability, enabling applications to effectively manage the trade-offs between privacy, bandwidth overhead, and latency of communication.
+Furthermore, in bidirectional communication, applications can independently configure privacy and overhead parameters for each direction
+{\sys} mitigates state-of-the-art traffic analysis attacks.
+Additionally, it provides robust theoretical privacy guarantees for traffic shaping, ensuring that users' privacy remains intact even in the face of future attacks.
+We design {\sys} as a modular traffic shaping tunnel endpoint that can be seamlessly integrated with any network stack along the path of traffic, offering flexibility and adaptability.
+We simulate the outbound traffic shaping component of our design and assess the bandwidth overheads and privacy trade-offs of {\sys} through this simulation..
 
 The rest of the thesis is organized as follows: 
-In \Cref{ch:background} we explain the background knowledge necessary for the thesis and provide a comprehensive overview of related work in the field.
-In \Cref{ch:dp-shaping} we propose our differentially-private shaping mechanism and prove its privacy guarantees. We further compare the notion of Differential Privacy with Tamaraw~\cite{cai2014systematic} notion of privacy in this chapter.
+In \Cref{ch:background}, we explain the background knowledge necessary for the thesis.
+In \Cref{ch:dp-shaping}, we propose our differentially-private shaping mechanism and prove its privacy guarantees. Furthermore, we compare the notion of Differential Privacy with the Tamaraw~\cite{cai2014systematic} privacy notion.
 \Cref{ch:design} provides a brief overview of the tunnel design. 
 We implement a simulator that simulates outbound traffic shaping component of our tunnel and evaluate the bandwidth overheads and empirical privacy guarantees of {\sys} using this simulator in \Cref{ch:evaluation}.
-We conclude the thesis by discussing the limitations of {\sys} and future research directions in \Cref{ch:conclusion}. 
+In \Cref{ch:related-work}, we provide a comprehensive overview of related work in the field.
+Finally, we conclude the thesis by discussing the limitations of {\sys} and outlining future research directions in \Cref{ch:conclusion}. 
 
 
 % Section 4: Distinctions

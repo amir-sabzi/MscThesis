@@ -1,4 +1,4 @@
-\chapter{Background and Prior Work}\label{ch:background}
+\chapter{Background}\label{ch:background}
 % Outline for the section:
 % - Network Side Channels
 % 	- Overview
@@ -20,25 +20,20 @@
 % Background intro. Explaining what you've included in this section. 
 % TODO: update if you add more to background
 
-We begin this chapter by discussing the problem of network side-channel attacks in \Cref{sec:ns-attacks} and exploring various proposed mitigations for such attacks in \Cref{sec:ns-defenses}.
-We, then, present a comprehensive definition of differential privacy (DP), outline its key properties, and highlight its primary applications, thereby setting the foundation for proposing our differentially private traffic shaping mechanism in \Cref{sec:dp-background}.
-Finally, in \Cref{sec:background-quic} we conclude this chapter by providing a brief overview of QUIC protocol, which plays a pivotal role in the design of {\sys}.
+We begin this chapter by discussing the problem of network side-channel attacks in \Cref{sec:ns-attacks}, in the context of two distinct applications: video streaming and web services.
+In \Cref{sec:dp-background}, we present a comprehensive definition of differential privacy (DP), outline its key properties, and highlight its primary applications, thereby setting the foundation for our differentially private traffic shaping mechanism.
+In \Cref{sec:background-quic} we provide a brief overview of the QUIC protocol, which plays a pivotal role in the design of {\sys}.
+Finally, in \Cref{sec:threat-model}, we conclude this chapter by explaining our threat model. 
 
 \section{Network Side Channel Attacks}\label{sec:ns-attacks}
 \input{src/background/sc_attacks.tex}
 
-\section{Network Side Channel Defenses}\label{sec:ns-defenses}
-\input{src/background/sc_defenses.tex}
 
 \section{Differential Privacy}\label{sec:dp-background}
 \input{src/background/dp.tex}
 
 \section{QUIC Transport Protocol}\label{sec:background-quic}
 \input{src/background/quic.tex}
-
-
-
-
 
 
 \section{Threat Model}\label{sec:threat-model}

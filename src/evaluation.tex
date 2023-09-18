@@ -1,15 +1,14 @@
 \chapter{Evaluation}\label{ch:evaluation}
 Our evaluation answers the following questions.
 (i) How well does {\sys} mitigate state-of-the-art network side-channel attacks?
-(ii) What are the overheads associated with varying DP relevant configuration parameters?
+(ii) What are the overheads associated with varying DP configuration parameters?
 (iii) What are {\sys}'s overall costs on privacy and bandwidth for different classes of applications?
 (iv) How do {\sys}'s privacy guarantees and performance overheads compare to prior techniques?
 
 
-For our experiments, we use a AMD Ryzen 7 7700X desktop each with eight 4.5 GHz CPUs, 32 GB RAM, 1 TB storage, and a GTX 4090 GPU.
-We use two applications for case studies, a video streaming service and a medical web service, which we describe below.
-We collect two different sets of traces to evaluate the privacy and overhead of our shaping mechanism.
-One dataset of traffic traces collected from a video streaming service, and the other one collected from a medical web service.
+For our experiments, we use a AMD Ryzen 7 7700X desktop with eight 4.5 GHz CPUs, 32 GB RAM, 1 TB storage, and a GTX 4090 GPU.
+We use two applications as case studies, a video streaming service and a medical web service, which we describe below.
+From each application, we collect two different sets of traces to evaluate the privacy and overhead of our shaping mechanism.
 \paragraph{Video service.}
 The video streaming service is hosted on an Nginx 1.23.4 web server and is used to serve 100 YouTube videos in 720p resolution.
 The videos are stored on a standard file system on the host OS and have durations ranging from 5 min to 130.3 min (median 12.6 min) and sizes ranging from 2.7 MB to 1.4 GB (median 73.7 MB).
@@ -18,19 +17,16 @@ We stream the first 5 minutes of each video 100 times and collect the traces, le
 \paragraph{Web service.}
 The web service is also hosted on Nginx 1.23.4 and is used to serve a corpus of 100 static HTML pages of a medical website.
 The web pages are stored on a standard file system on the host OS and have sizes ranging from 54 KB to 147 KB (median: 90 KB).
-Similar to video dataset, we request each webpage 100 times, resulting in a dataset with 10000 traces in total.
+Similar to the video dataset, we request each webpage 100 times, resulting in a dataset with 10000 traces in total.
 %
 
-We design and implement a traffic shaping simulator to evaluate the bandwidth overhead and privacy guarantees of {\sys} differentially private traffic shaping mechanism.
-The simulator helps users to configure parameters of {\sys} shaping mechanism, balancing the trade-offs between privacy and overhead according to their requirement.
-They can use optimal parameters in the actual {\sys} system, which we design in \Cref{sec:tunnel-design} and implement as part of NetShaper paper {\addref}.
-We implemented the simulator and our data-processing pipeline in 4589 lines of Python code.
-In this chapter, we first elaborate on the components of our simulator, and the way we implement it. 
-Then, we provide a brief overview of our TCN-based Video Identification attack, where we use temporal neural networks (TCN) to map the pattern of the traffic trace to its content. 
-In the rest of the chapter, using our simulator and TCN-based attack, we evaluate {\sys}'s privacy and bandwidth overhead trade-offs.
 
-\section{Traffic Shaping Simulator}\label{sec:eval-simulator}
-\input{src/evaluation/simulator.tex}
+In \Cref{sec:eval-tcn}, we provide a brief overview of our TCN-based video identification attack, where we use temporal neural networks (TCN) to map the pattern of the traffic trace to its content.
+Then, in \Cref{sec:eval-empirical-privacy} we use our TCN-based video identification attack to evaluate the privacy of DP traffic shaping empirically.
+In \Cref{sec:eval-privacy-params}, we measure the effect of various parameters in our system on the privacy loss associated with our DP shaping mechanism. 
+In \Cref{sec:eval-bw}, we measure the bandwidth and latency overheads of DP shaping mechanism with two different application: video streaming and web services.
+Finally, we compare overheads of {\sys} with other traffic shaping techniques.  
+
 
 \section{TCN-based Video Identification}\label{sec:eval-tcn}
 \input{src/evaluation/TCN.tex}
@@ -41,5 +37,5 @@ In the rest of the chapter, using our simulator and TCN-based attack, we evaluat
 \section{Impact of Privacy Parameters}\label{sec:eval-privacy-params}
 \input{src/evaluation/privacy_parameters.tex}
 
-\section{DP Shaping bandwidth Overhead}\label{sec:eval-bw}
+\section{DP Shaping Bandwidth and Latency Overhead}\label{sec:eval-bw}
 \input{src/evaluation/bandwidth_overhead.tex}
