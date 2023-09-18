@@ -1,15 +1,15 @@
 
 QUIC is a modern transport layer protocol specifically developed to enhance the performance of HTTPS traffic~\cite{langley2017quic}.
-Using UDP packets as the transport layer carrier allows QUIC packets to traverse current network infrastructure developed for TCP/UDP protocols such as middleboxes.
-On the top of UDP, QUIC provides transport functionalities of flow control, loss recovery, encryption, and congestion control.
-Unlike TCP, QUIC mitigates head-of-the-line blocking delays by introducing a novel data structuring abstraction known as streams. 
+QUIC provides transport functionalities of flow control, loss recovery, encryption, and congestion control, on the top of UDP.
 QUIC is now standardized under RFC 9000~\cite{rfc9000}, and the details of design and implementation of the protocol is well beyond the scope of this thesis.
+Each QUIC connection carries multiple QUIC streams.
 QUIC's streams offer a lightweight and ordered way for applications to send byte-streams.
 These streams can be either unidirectional or bidirectional, depending on the specific needs of the application.
+Unlike TCP, QUIC alleviates head-of-the-line blocking delays, enabling a QUIC connection to efficiently handle flows from various applications as separate streams within a single connection. 
+We specifically leverage this property of QUIC in design of our traffic shaping tunnel in \Cref{sec:tunnel-design}.
 Within a connection, each stream is identified with a new ID.
 Each stream has a unique header with 5 major fields: Type, Stream ID, Offset, and Data Length.
-The stream header within a packet is encrypted, ensuring that adversaries are unable to discover the active streams in a connection.
-Either of endpoints can terminate streams.
+The stream header and its payload within a packet are encrypted, ensuring that adversaries are unable to discover the active streams in a connection.
 
 % \subsection{QUIC Congestion and Flow Control}
 % \subsubsection{Flow Control}

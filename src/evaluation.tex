@@ -6,17 +6,17 @@ Our evaluation answers the following questions.
 (iv) How do {\sys}'s privacy guarantees and performance overheads compare to prior techniques?
 
 
-For our experiments, we use a AMD Ryzen 7 7700X desktop with eight 4.5 GHz CPUs, 32 GB RAM, 1 TB storage, and a GTX 4090 GPU.
+To run the simulator for our experiments, we use a AMD Ryzen 7 7700X desktop with eight 4.5 GHz CPUs, 32 GB RAM, 1 TB storage, and a GTX 4090 GPU.
 We use two applications as case studies, a video streaming service and a medical web service, which we describe below.
 From each application, we collect two different sets of traces to evaluate the privacy and overhead of our shaping mechanism.
 \paragraph{Video service.}
 The video streaming service is hosted on an Nginx 1.23.4 web server and is used to serve 100 YouTube videos in 720p resolution.
-The videos are stored on a standard file system on the host OS and have durations ranging from 5 min to 130.3 min (median 12.6 min) and sizes ranging from 2.7 MB to 1.4 GB (median 73.7 MB).
+The videos have durations ranging from 5 min to 130.3 min (median 12.6 min) and sizes ranging from 2.7 MB to 1.4 GB (median 73.7 MB).
 We stream the first 5 minutes of each video 100 times and collect the traces, leading to 10000 traces in total.
 
 \paragraph{Web service.}
 The web service is also hosted on Nginx 1.23.4 and is used to serve a corpus of 100 static HTML pages of a medical website.
-The web pages are stored on a standard file system on the host OS and have sizes ranging from 54 KB to 147 KB (median: 90 KB).
+The web pages have sizes ranging from 54 KB to 147 KB (median: 90 KB).
 Similar to the video dataset, we request each webpage 100 times, resulting in a dataset with 10000 traces in total.
 %
 
@@ -37,5 +37,5 @@ Finally, we compare overheads of {\sys} with other traffic shaping techniques.
 \section{Impact of Privacy Parameters}\label{sec:eval-privacy-params}
 \input{src/evaluation/privacy_parameters.tex}
 
-\section{DP Shaping Bandwidth and Latency Overhead}\label{sec:eval-bw}
+\section{Bandwidth and Latency Overhead}\label{sec:eval-bw}
 \input{src/evaluation/bandwidth_overhead.tex}

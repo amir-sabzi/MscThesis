@@ -26,10 +26,11 @@ In the literature, this type of attack is commonly known as a network side-chann
 One approach to mitigate network side-channel attacks is shaping application's traffic to decouple application secrets (\ie contents of the application's data) from the sizes and timing of the application's network packets.
 In this method, a program actively modifies the traffic shape to ensure that the pattern of data transmission is independent of the content.  
 One na\"ive strategy for traffic shaping is to adjust the traffic shape to a constant-rate transmission.
-To maintain constant-rate data transmission, the shaping program sends dummy traffic when the traffic rate is lower than the target constant-rate. Additionally, it buffers data when the traffic rate surpasses the established constant transmission rate.
+To maintain constant-rate data transmission, the shaping program sends dummy traffic when the traffic rate is lower than the target constant-rate. 
+It buffers data when the traffic rate surpasses the established constant transmission rate.
 While constant-rate traffic shaping provides privacy, it unavoidably results in either significant bandwidth overhead, substantial latency overhead, or both, depending on the traffic rate.
 In particular, the transmission of substantial volumes of dummy traffic, even when there is no real data to be sent, can result in significant bandwidth overhead~\cite{saponas2007devices}.
-Additionally, buffering data to maintain the constant rate can potentially cause latency overhead.
+Additionally, buffering data to maintain the constant rate can cause latency overhead.
 
 
 An alternate approach is to modify the traffic shape to a variable-rate shape, thereby altering the trade-offs between privacy and overheads.

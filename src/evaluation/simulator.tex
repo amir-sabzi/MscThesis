@@ -1,8 +1,8 @@
-We design and implement a traffic shaping simulator to evaluate the bandwidth overhead and privacy guarantees of {\sys}'s.
+We design and implement a traffic shaping simulator for {\sys}.
 The simulator helps users to find parameters of {\sys} shaping mechanism that balance the trade-offs between privacy and overhead according to their requirement.
-They can use these parameters in the actual {\sys} system, which we designed in \Cref{sec:tunnel-design} and implemented as part of NetShaper paper \cite{netshaper}.
-The simulator specifically simulates the functionality of \emph{Outbound Traffic Shaping} component of a tunnel endpoint to evaluate the privacy and bandwidth overheads of our DP shaping strategy.
-The simulator consists of four major components: the Inbound Traffic Processor, responsible for receiving and processing collected traces; the Streaming Application, which emulates the behavior of the application that generated the traffic traces; the Single-Producer Single-Consumer Queue, representing the concept of the buffering queue introduced in \Cref{sec:dp-shaping-definitions} as part of our shaping mechanism; and finally, the Traffic Shaping Module, which implements the core shaping mechanism explained in \Cref{subsec:dp-shaping-mechanism}.
+They can use these parameters in the actual {\sys} system, which we designed in \Cref{sec:tunnel-design} and implemented as part of the NetShaper artifact \cite{netshaper_repo}.
+The simulator specifically simulates the {outbound traffic shaping} functionality of the tunnel endpoint.
+The simulator consists of four major components: (i) Inbound Traffic Processor, which is responsible for receiving and processing collected traces. (ii) Streaming Application, which emulates the behavior of the application that generated the traffic traces. (iii) Single-Producer Single-Consumer Queue, which represents the concept of the buffering queue introduced in \Cref{sec:dp-shaping-definitions} as part of our shaping mechanism. (iv) Traffic Shaping Module, which implements the core shaping mechanism explained in \Cref{subsec:dp-shaping-mechanism}.
 
 
 \paragraph{Inbound Traffic Processor}\label{subsubsec:design-sim-inbound}

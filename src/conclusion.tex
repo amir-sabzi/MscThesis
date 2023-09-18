@@ -1,8 +1,8 @@
 \chapter{Conclusion}\label{ch:conclusion}
-{\sys} is a novel mitigation for side-channel attacks. 
+{\sys} is a novel mitigation for network side-channel attacks. 
 It relies on the strong notion of differential privacy to provide theoretical privacy guarantees, while introducing small overheads. 
-{\sys} is highly configurable, allowing users to change the privacy-utility trade-off based on the requirements of different applications. 
-Furthermore, we have designed {\sys} in a modular fashion, ensuring that it can be deployed seamlessly at any point along the traffic path without requiring any modifications to the application itself. 
+{\sys} is configurable, allowing users to change the privacy-utility trade-off based on the requirements of different applications. 
+Furthermore, we have designed {\sys} in a modular fashion, ensuring that it can be deployed at any point along the traffic path without requiring any modifications to the application itself. 
 
 We conclude the dissertation by providing an overview of {\sys}'s limitations and elaborating on potential future research directions.
 
@@ -34,9 +34,18 @@ We propose a design for {\sys} based on proxy model, where it receives traffic, 
 Implementing this functionality at the application layer increases end-to-end communication latency, as each packet must traverse the kernel network four times before arriving at the destination.
 Recent advances in programmable networking devices such as programmable NICs and programmable switches~\cite{meier2022ditto} provide an opportunity to offload DP shaping mechanism to the network hardware, which can potentially reduce the latency of {\sys}.
 
-\paragraph{optimized DP Traffic Shapnig.}
+\paragraph{Optimized DP Traffic Shapnig.}
 The current DP shaping mechanism, measures the queue size every $\dpintvl$ seconds.
 Based on the composition theorem, we know that the privacy loss increases with every measurement of the queue size. 
 However, if the queue size does not significantly change between intervals, the DP shaping mechanism can use the measurement of the previous interval without further increasing the privacy loss. 
 This is the foundation of a new, more sophisticated family of DP mechanisms, known as Sparse Vector Technique for Differential Privacy~\cite{lyu2016understanding}. 
 Adapting this form of DP mechanism for our DP shaping is an exciting direction for future research.
+
+\paragraph{Optimal DP Configuration.}
+Our DP shaping mechanism is highly configurable. 
+The performance of the DP traffic shaping depends on several parameters: the window length $\winlen$, the sensitivity for neighboring streams $\ssens$, the length of the DP measurement interval $\dpintvl$, and the privacy loss $\varepsilon_{\winlen}$.
+Tuning these parameters for different applications is important.
+For example, an overestimation of sensitivity ($\qsens$) leads to unnecessary overhead, while underestimating it results in an exponential increase in privacy loss.
+We believe that a comprehensive measurement study can help to address problem as a future research direction. 
+Analyzing the extent to which various types of traffic (\eg video, web, and VoIP) can influence changes in buffering queue size aids in identifying the optimal values for $\qsens$.
+Furthermore, various applications have distinct latency and bandwidth requirements. Analyzing these requirements assists us in selecting the appropriate set of parameters, such as $T$ and $W$, tailored to the specific needs of each application.

@@ -3,8 +3,8 @@ shaping.
 To evaluate privacy empirically, we first establish the baseline for comparison, which is attacker accuracy, precision, and recall on unmodified (\ie unshaped) traces.
 We set up the video service and a video client as two Amazon AWS VMs placed in Oregon and Montreal, respectively.
 The client streams the first 5 min of all videos of our video dataset over HTTPS and collects the resulting network packet traces using tcpdump.
-We also filter our dataset comprising 10,000 traces and 100 videos to reduce it to a smaller dataset consisting of 40 videos and 4,000 traces.
-We evaluate the Beauty and the Burst (BB) model and our TCN-based model with the collected traces using both small and large datasets.
+We also filter our dataset comprising 10,000 traces and 100 videos to reduce it to two smaller datasets: One consisting of 40 videos and 4,000 traces, and the other with 20 videos and 2,000 traces.
+We evaluate the Beauty and the Burst (BB) model and our TCN-based model with the collected traces using these three datasets.
 The objective of the models is to determine the corresponding video title for a given trace. 
 For each model, we transform each packet trace into a sequence of burst sizes
 transmitted within 1s windows.
@@ -12,7 +12,7 @@ Therefore, the input to the classifier is a time series representing burst sizes
 We normalize the time series by dividing each burst size by the total size of the corresponding trace.
 For each dataset, we use 80\% of traces to train the model and 20\% of traces to test it. 
 We train both models for 1000 epochs\footnote{An epoch refers to one complete pass through the entire training dataset during the training.} and report the accuracy, precision, and recall on the test data.
-\Cref{tab:attack-performance} represents the result for both models with the two datasets.
+\Cref{tab:attack-performance} represents the result for both models with the three datasets.
 Our TCN model outperformes BB model on both datasets. 
 Specifically, BB struggles with the larger dataset and its accuracy drops to random guess. 
 The presence of residual layers in TCN makes it a better choice for a larger dataset.
@@ -23,24 +23,30 @@ The presence of residual layers in TCN makes it a better choice for a larger dat
     \hline
     \textbf{Attack} & \textbf{\# of videos} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} \\ 
     \hline
-    \multirow{2}{*}{TCN} & 100 & 0.995 & 0.99 & 0.99 \\ 
-                         & 40  & 0.996 & 0.99 & 0.99 \\ 
+    \multirow{3}{*}{TCN} & 100 & 0.99 & 0.99 & 0.99 \\ 
+                         & 40  & 0.99 & 0.99 & 0.99 \\
+                         & 20  & 0.99 & 0.99 & 0.99 \\
     \hline
-    \multirow{2}{*}{BB}  & 100 & 0.005  & 0.005 & 0.01 \\ 
+    \multirow{3}{*}{BB}  & 100 & 0.005  & 0.005 & 0.01 \\ 
                          & 40  & 0.61  & 0.49 & 0.63 \\ 
+                         & 20  & 0.85  & 0.78 & 0.85 \\ 
     \hline
   \end{tabular}\label{tab:attack-performance}
 \end{table}
 
 Next, we evaluate the efficacy of our differentially-private shaping mechanism against both BB and TCN attacks with the small dataset.
 We did not consider the large dataset for this task because the BB model failed to classify the baseline unshaped traffic, making it impossible to see the effectiveness of the DP shaping mechanism for this attack.
-The performance of the DP traffic shaping depends on several parameters: the window length $\winlen$, the sensitivity for neighboring streams $\ssens$, the length of the DP measurement interval $\dpintvl$, and the privacy loss $\varepsilon_{\winlen}$.
-The privacy of the mechanism, however, is characterized by the privacy loss, $\varepsilon_{\winlen}$
+The privacy of the mechanism is characterized by the privacy loss, $\varepsilon_{\winlen}$.
 Therefore, we fix values of $\ssens$, $\winlen$, and $\dpintvl$ and measure the accuracy of classifier for varying values of $\varepsilon_{\winlen}$.
 As both of attacks fail to perform effectively with small values of $\varepsilon_{\winlen}$ (\ie lower privacy loss), we increment $\varepsilon_{\winlen}$ until one of the attacks yields an accuracy beyond random guessing (\ie $\varepsilon_{\winlen} \in [100, 43000]$).
-Our goal is to provide intuition about practical values of $\varepsilon_{\winlen}$ that are sufficient to thwart a side-channel~attack.
+Our goal is to provide intuition about values of $\varepsilon_{\winlen}$ that are sufficient to thwart a side-channel~attack.
 
-We set (i) $\winlen = 5s$ to align with the 5s video segments that comprise the videos, (ii) $\ssens = 1 MB$, which covers 97\% of the video streams in our dataset, and (iii) $\dpintvl = 1s$, which leads to composing the privacy loss over $\varnumupdates = 5$ DP measurements of the buffering queues.
+We set (i) $\winlen = 5s$ to align with the 5s video segments that comprise the videos, (ii) $\ssens = 1 MB$, which covers 97\%
+\footnote{
+If the change in queue size surpasses the sensitivity value, it results in a privacy loss exceeding the intended $\varepsilon_{\winlen}$ threshold.
+Nevertheless, the privacy guarantees provided by Differential Privacy (DP) remain applicable even in cases where the privacy loss exceeds the sensitivity, resulting in traffic shaping with larger privacy loss values.
+}
+of the video streams in our dataset, and (iii) $\dpintvl = 1s$, which leads to composing the privacy loss over $\varnumupdates = 5$ DP measurements of the buffering queues.
 
 We use 4000 traces of 40 videos, each with 5 minutes duration (\ie small dataset).
 For each value of $\varepsilon_{\winlen}$, we transform each unshaped trace into a shaped trace using our simulator to generate a total of 4000 shaped traces.

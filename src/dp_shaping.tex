@@ -327,12 +327,37 @@ Formally, we have:
 We use R\'enyi-DP composition (see \Cref{prop:rdp-composition}) on the Gaussian mechanism for $\textrm{DP\_compose()}$.
 Note that the overhead (\ie noise added) due to DP does not depend on the number of streams: the overhead is the same regardless of the number of streams transmitted through the buffering queue simultaneously.
 
-\section{Comparison of DP and Tamaraw Notion of Privacy}
+
+
+
+\section{Comparison of DP and Tamaraw Notion of Privacy}\label{sec:tamaraw-dp-comparison}
 Differential privacy is not the only notion of privacy proposed to provide theoretical guarantees against network side-channel attacks.
-As we mentioned, Tamaraw \cite{cai2014tamaraw} provides a
+Tamaraw \cite{cai2014tamaraw} provides a
 mathematical notion of privacy guarantee of a shaping strategy, called $\gamma$-security. 
-We elaborate on their notion of privacy in \Cref{subsec:dynamic-traffic-shaping}.
-Here, we show that the $(\varepsilon, \delta_{\winlen})$-DP definition is strictly stronger than Tamaraw's $\gamma$-security definition.
+
+Tamaraw defines $W$ as the random variable that represents the label of a
+traffic trace.
+For each traffic trace, $w$, let $T_{w}$ and $T_{w}^{D}$ be the random variables representing
+the packet trace of $w$ before and after applying shaping on $w$ respectively.
+The distribution of $T_{w}^D$ encompasses all variations in observed
+patterns of a trace $w$ resulting from both the defense mechanism and the
+network, and the distribution of $T_{w}$ captures only the randomness added in the network.
+The attacker can measure the distribution of $W$ and $T_{w}^{D}$ independently.
+
+Upon observing a trace $t$, an optimal attack, $A$, selects the
+label that corresponds to the maximum likelihood of observing that trace.
+\begin{equation*}
+  A(t) = \argmax_{w}{\Pr[W=w]\Pr[T_{w}^{D}=t]}
+\end{equation*}
+For any attack $A$, we represent the probability that the attack outputs the label $w_i$ with $\Pr_A[w_i]$.
+\begin{definition}[Tamaraw $\gamma$-privacy]
+  A fingerprinting defense $D$ is said to be uniformly $\gamma$-private if, for the attack ${A}$, we have:
+  \begin{equation*}
+    \max_w\big[\Pr[A(T_w^D)=w]\big] \leq \gamma
+  \end{equation*}
+\end{definition}
+
+Now, we show that the $(\varepsilon, \delta_{\winlen})$-DP definition is strictly stronger than Tamaraw's $\gamma$-security definition.
 
 \begin{proposition}
   Tamaraw $\gamma$-privacy is strictly weaker than $(\varepsilon, 0)$-differential privacy.

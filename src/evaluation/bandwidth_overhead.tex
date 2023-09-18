@@ -5,21 +5,6 @@ We apply traffic shaping in both directions, customizing the parameters to match
 
 
 \subsection{Case Study: Video Streaming}\label{subsec:eval-bw-video}
-We examine the effect of different privacy settings on bandwidth overhead for video streaming clients.
-We run experiments with three values of the DP measurement interval $\dpintvl$ for the server:
-100ms, 500ms, and 1s, and we use $\ssens = 1 MB$ and $\varepsilon_{\winlen} = 1$.
-For all experiments, we set the DP parameters for client request traffic as follows: $\ssens = 200$~bytes, $\winlen = 1s$, $\dpintvl = 100ms$, and $\varepsilon_{\winlen} = 1$.
-For the server responses, we configure DP parameters as follows: $\ssens = 1 MB$~bytes, $\winlen = 5s$, $\dpintvl = 1 s$, and $\varepsilon_{\winlen} = 1$.
-We use different set of parameters for communication from server to client and vice versa due to the different characteristics of traffic in each direction.
-Periodically, at intervals of 5 seconds, the client sends a small web request  to the server to download the next video segment. 
-In the reverse direction, the server transmits segments to the client one by one.
-Compared to the small client requests, segments are larger and have a bursty traffic pattern.
-As the client requests each segment preemptively, as long as the server delivers the next segment within 5 seconds, the client can play video seamlessly. 
-We run experiments with 1, 16, and 128 video clients; each client requests one video randomly selected from the dataset.
-For each set of configurations, we measure the per-flow relative bandwidth overhead for the video streams in the simulator.
-We use {\sys}'s artifact to measure the latency of each segment.
-Finally, we measure the average response latency for individual video segments with {\sys}'s artifact~\cite{netshaper_repo}.
-
 \begin{figure}[t]
   \centering
   \begin{subfigure}{0.49\columnwidth}
@@ -39,45 +24,23 @@ Finally, we measure the average response latency for individual video segments w
   }
 \end{figure}
 
+We examine the effect of different privacy settings on bandwidth overhead for video streaming clients.
+We run experiments with three values of the DP measurement interval $\dpintvl$ for the server:
+100ms, 500ms, and 1s, and we use $\ssens = 1 MB$ and $\varepsilon_{\winlen} = 1$.
+For all experiments, we set the DP parameters for client request traffic as follows: $\ssens = 200$~bytes, $\winlen = 1s$, $\dpintvl = 100ms$, and $\varepsilon_{\winlen} = 1$.
+For the server responses, we configure DP parameters as follows: $\ssens = 1 MB$~bytes, $\winlen = 5s$, $\dpintvl = 1 s$, and $\varepsilon_{\winlen} = 1$.
+We use different set of parameters for communication from server to client and vice versa due to the different characteristics of traffic in each direction.
+Periodically, at intervals of 5 seconds, the client sends a small web request  to the server to download the next video segment. 
+In the reverse direction, the server transmits segments to the client one by one.
+Compared to the small client requests, segments are larger and have a bursty traffic pattern.
+As the client requests each segment preemptively, as long as the server delivers the next segment within 5 seconds, the client can play video seamlessly. 
+We run experiments with 1, 16, and 128 video clients; each client requests one video randomly selected from the dataset.
+For each set of configurations, we measure the per-flow relative bandwidth overhead for the video streams in the simulator.
+We use {\sys}'s artifact to measure the latency of each segment.
+Finally, we measure the average response latency for individual video segments with {\sys}'s artifact~\cite{netshaper_repo}.
 
-\begin{figure}[t]
-  \centering
-  \begin{subfigure}{0.49\columnwidth}
-      \centering
-      \includegraphics[width=\textwidth]{plots/overhead_vs_dp_interval_web.pdf}
-      \caption{BW overhead vs DP interval}
-      \label{fig:web-overhead-vs-dpInt}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}{0.49\columnwidth}
-      \centering
-      \includegraphics[width=\textwidth]{plots/latency_vs_dp_interval_web.pdf}
-      \caption{Latency vs DP interval}
-      \label{fig:web-latency-vs-dpInt}
-  \end{subfigure}
-  \caption{Web Service; Bandwidth and latency overhead for different values of DP interval.
-  }
-\end{figure}
 
-\begin{figure}[t]
-  \centering
-  \begin{subfigure}{0.49\columnwidth}
-      \centering
-      \includegraphics[width=\textwidth]{plots/overhead_vs_number_of_traces_video_loglog.pdf}
-      \caption{Video streaming.}
-      \label{fig:video-overheads-compare}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}{0.49\columnwidth}
-      \centering
-      \includegraphics[width=\textwidth]{plots/overhead_vs_number_of_traces_web_loglog.pdf}
-      \caption{Web service.}
-      \label{fig:web-overheads-compare}
-  \end{subfigure}
-  \caption{Relative bandwidth overheads of {\sys} ({\ns}), constant
-      shaping ({\constshape}), and Pacer.
-  }
-\end{figure}
+
 
 
 \paragraph{Bandwidth overhead.}
@@ -102,6 +65,24 @@ A larger DP measurement interval implies increased download latency but fewer DP
 
 
 \subsection{Case Study: Web Service}\label{subsec:eval-bw-web}
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}{0.49\columnwidth}
+      \centering
+      \includegraphics[width=\textwidth]{plots/overhead_vs_dp_interval_web.pdf}
+      \caption{BW overhead vs DP interval}
+      \label{fig:web-overhead-vs-dpInt}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\columnwidth}
+      \centering
+      \includegraphics[width=\textwidth]{plots/latency_vs_dp_interval_web.pdf}
+      \caption{Latency vs DP interval}
+      \label{fig:web-latency-vs-dpInt}
+  \end{subfigure}
+  \caption{Web Service; Bandwidth and latency overhead for different values of DP interval.
+  }
+\end{figure}
 Now, we examine the effect of different privacy settings on bandwidth overhead for a web service.
 As we mentioned in previous section, we expect the length of DP interval ($T$) affects end-to-end latency.
 We choose smaller values for $\dpintvl$ for web service compared to video streaming applications as web applications are delay-sensitive.
@@ -125,8 +106,33 @@ Similar to video streaming applications, when there are multiple concurrent requ
 \Cref{fig:web-latency-vs-dpInt} shows the latency for different values of $\dpintvl$.
 Similar to video streaming, the latency increases with larger values of DP interval.
 As web services are latency-sensitive, we use smaller values of DP interval in this experiment. 
+Based on this figure, the optimal value of DP interval for our web service is $\dpintvl = 50 ms$. 
+With this value, the overhead is minimized, and a latency of 50 ms remains acceptable for web applications. 
+
 
 \section{Comparison with Prior Techniques}\label{sec:eval-comparison-others}
+
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}{0.49\columnwidth}
+      \centering
+      \includegraphics[width=\textwidth]{plots/overhead_vs_number_of_traces_video_loglog.pdf}
+      \caption{Video streaming.}
+      \label{fig:video-overheads-compare}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\columnwidth}
+      \centering
+      \includegraphics[width=\textwidth]{plots/overhead_vs_number_of_traces_web_loglog.pdf}
+      \caption{Web service.}
+      \label{fig:web-overheads-compare}
+  \end{subfigure}
+  \caption{Relative bandwidth overheads of {\sys} ({\ns}), constant
+      shaping ({\constshape}), and Pacer.
+  }
+\end{figure}
+
 \paragraph{Video Streaming.}
 \Cref{fig:video-overheads-compare} shows the per-flow relative bandwidth overhead of {\sys} ({\ns}) for the video streaming application as a function of the number of concurrent flows and for different values of $\varepsilon_{\winlen}$.
 Except $\varepsilon_{\winlen}$, we use the same of parameters that we proposed in \Cref{sec:eval-bw}.
